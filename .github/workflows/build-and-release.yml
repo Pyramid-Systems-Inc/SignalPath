@@ -160,9 +160,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: List build outputs
+        shell: bash
         run: |
           echo "Build outputs:"
-          ls -la release/ || echo "No release directory found"
+          if [ -d "release" ]; then
+            ls -la release/
+          else
+            echo "No release directory found"
+          fi
 
       - name: Upload artifacts (Windows)
         if: matrix.platform == 'win32'
