@@ -1,3 +1,10 @@
+# 1.0.0 (2025-06-09)
+
+
+### Features
+
+* initial release of SignalPath Intercom Designer- Complete Electron + React application- Component palette and canvas functionality  - Properties panel for component configuration- Cross-platform desktop application support ([92fc7a2](https://github.com/OmarAglan/SignalPath/commit/92fc7a2d283b773cd31a3c2bbb7f52f3cae0773f))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
