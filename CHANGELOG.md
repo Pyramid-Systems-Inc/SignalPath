@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/OmarAglan/SignalPath/compare/v1.1.0...v1.1.1) (2025-06-09)
+
+
+### Bug Fixes
+
+* ico fix ([fcaa327](https://github.com/OmarAglan/SignalPath/commit/fcaa327b2533655dac2ed6cce6ecbafc7f47c759))
+
 # [1.1.0](https://github.com/OmarAglan/SignalPath/compare/v1.0.0...v1.1.0) (2025-06-09)
 
 
