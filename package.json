@@ -50,16 +50,8 @@
     },
     "files": [
       "out/**/*",
-      "dist/**/*",
-      "electron/**/*",
       "!electron/**/*.ts",
       "!electron/**/*.map"
-    ],
-    "extraResources": [
-      {
-        "from": "dist",
-        "to": "app/dist"
-      }
     ],
     "win": {
       "target": [

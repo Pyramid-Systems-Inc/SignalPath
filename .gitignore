@@ -15,7 +15,9 @@ dist-ssr
 # Build directories and artifacts
 release/
 out/
-build/
+# Ignore build outputs but keep icon assets
+build/*
+!build/icon.*
 
 # Electron-builder output
 *.exe
