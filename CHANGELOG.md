@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/OmarAglan/SignalPath/compare/v1.1.2...v1.1.3) (2025-06-09)
+
+
+### Bug Fixes
+
+* small github actions fix ([2918969](https://github.com/OmarAglan/SignalPath/commit/2918969ffaa12e276706fb812ac584dacf396c69))
+
 ## [1.1.2](https://github.com/OmarAglan/SignalPath/compare/v1.1.1...v1.1.2) (2025-06-09)
 
 
