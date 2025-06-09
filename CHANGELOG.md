@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/OmarAglan/SignalPath/compare/v1.0.0...v1.1.0) (2025-06-09)
+
+
+### Features
+
+* Add app icons and configure build assets ([0ee3f05](https://github.com/OmarAglan/SignalPath/commit/0ee3f05b7a3e98b8cbd71fb733c244dc1c9a85eb))
+
 # 1.0.0 (2025-06-09)
 
 
