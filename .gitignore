@@ -32,6 +32,9 @@ build/
 latest*.yml
 builder-debug.yml
 builder-effective-config.yaml
+# Keep workflow files
+!.github/workflows/*.yml
+!.releaserc.json
 
 # Editor directories and files
 .vscode/*
