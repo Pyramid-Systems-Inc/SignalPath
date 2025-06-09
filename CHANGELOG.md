@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/OmarAglan/SignalPath/compare/v1.1.3...v1.1.4) (2025-06-09)
+
+
+### Bug Fixes
+
+* Update README with comprehensive project documentation ([4572192](https://github.com/OmarAglan/SignalPath/commit/457219270c8be3f59e275601dcf69d99580edea0))
+
 ## [1.1.3](https://github.com/OmarAglan/SignalPath/compare/v1.1.2...v1.1.3) (2025-06-09)
 
 
