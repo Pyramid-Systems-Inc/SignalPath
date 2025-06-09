@@ -2,6 +2,8 @@
   "name": "signalpath",
   "private": true,
   "version": "0.0.0",
+  "description": "A professional intercom system designer and schematic editor for signal path visualization",
+  "author": "SignalPath Team",
   "type": "module",
   "main": "out/main/index.js",
   "scripts": {
@@ -9,6 +11,7 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "lint": "eslint .",
+    "build:package": "npm run build && electron-builder",
     "electron:pack": "electron-builder",
     "electron:dist": "electron-vite build && electron-builder"
   },
@@ -34,23 +37,67 @@
     "vite": "^6.3.5"
   },
   "build": {
-    "appId": "com.signalpath.app",
-    "productName": "SignalPath",
+    "appId": "com.signalpath.intercom-designer",
+    "productName": "SignalPath Intercom Designer",
     "directories": {
-      "output": "dist"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
-      "dist-electron",
-      "dist"
+      "out/**/*",
+      "dist/**/*",
+      "electron/**/*",
+      "!electron/**/*.ts",
+      "!electron/**/*.map"
     ],
-    "mac": {
-      "icon": "build/icon.icns"
-    },
+    "extraResources": [
+      {
+        "from": "dist",
+        "to": "app/dist"
+      }
+    ],
     "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
       "icon": "build/icon.ico"
     },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.productivity"
+    },
     "linux": {
-      "icon": "build/icon.png"
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "Development"
     }
   }
 }
