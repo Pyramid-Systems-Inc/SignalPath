@@ -1,0 +1,32 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2196F3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="url(#grad1)" stroke="#333" stroke-width="4"/>
+  
+  <!-- Signal wave icons -->
+  <path d="M64 128 Q96 96 128 128 Q160 160 192 128" 
+        stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
+  
+  <path d="M80 128 Q112 112 128 128 Q144 144 176 128" 
+        stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/>
+  
+  <path d="M96 128 Q112 120 128 128 Q144 136 160 128" 
+        stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  
+  <!-- Central node -->
+  <circle cx="128" cy="128" r="8" fill="white"/>
+  
+  <!-- Connection points -->
+  <circle cx="64" cy="128" r="6" fill="white"/>
+  <circle cx="192" cy="128" r="6" fill="white"/>
+  
+  <!-- Text -->
+  <text x="128" y="200" font-family="Arial, sans-serif" font-size="20" font-weight="bold" 
+        text-anchor="middle" fill="white">SignalPath</text>
+</svg>

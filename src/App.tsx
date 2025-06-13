@@ -7,13 +7,18 @@ import './App.css'
 function App() {
   return (
     <div style={{
-      display: 'flex',
+      position: 'relative',
       height: '100vh',
       width: '100vw',
       overflow: 'hidden'
     }}>
-      <PropertiesPanel />
+      {/* Canvas layer - behind everything */}
       <Canvas />
+      
+      {/* Properties Panel - floating overlay on left */}
+      <PropertiesPanel />
+      
+      {/* Component Palette - floating overlay on right */}
       <ComponentPalette />
     </div>
   )
