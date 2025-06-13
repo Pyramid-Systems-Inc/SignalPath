@@ -1,0 +1,12 @@
+<svg width="48" height="24" viewBox="0 0 48 24" xmlns="http://www.w3.org/2000/svg">
+  <!-- Resistor symbol - zigzag pattern -->
+  <path d="M4 12 L8 12 L10 6 L14 18 L18 6 L22 18 L26 6 L30 18 L34 6 L38 12 L44 12" 
+        stroke="#333" 
+        stroke-width="2" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  <!-- Connection points -->
+  <circle cx="4" cy="12" r="1.5" fill="#333"/>
+  <circle cx="44" cy="12" r="1.5" fill="#333"/>
+</svg>

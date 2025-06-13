@@ -1,8 +1,8 @@
 import React from 'react'
-import ComponentPalette from './components/ComponentPalette'
-import Canvas from './components/Canvas'
-import PropertiesPanel from './components/PropertiesPanel'
 import './App.css'
+import Canvas from './components/Canvas'
+import ComponentPalette from './components/ComponentPalette'
+import PropertiesPanel from './components/PropertiesPanel'
 
 function App() {
   return (
@@ -14,10 +14,10 @@ function App() {
     }}>
       {/* Canvas layer - behind everything */}
       <Canvas />
-      
+
       {/* Properties Panel - floating overlay on left */}
       <PropertiesPanel />
-      
+
       {/* Component Palette - floating overlay on right */}
       <ComponentPalette />
     </div>

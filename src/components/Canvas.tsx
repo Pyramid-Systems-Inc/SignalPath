@@ -1,115 +1,120 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { Stage, Layer } from 'react-konva'
+import Konva from 'konva'
+import Grid from './Grid'
 
 const Canvas: React.FC = () => {
-  const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
-  const [isDragging, setIsDragging] = useState(false)
-  const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 })
-  const canvasRef = useRef<HTMLDivElement>(null)
+  const [stageSize, setStageSize] = useState({ width: 800, height: 600 })
+  const [stageScale, setStageScale] = useState(1)
+  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 })
+  const containerRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<Konva.Stage>(null)
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    setIsDragging(true)
-    setLastPosition({ x: e.clientX, y: e.clientY })
+  // Handle container resizing
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (containerRef.current) {
+        const { offsetWidth, offsetHeight } = containerRef.current
+        setStageSize({ width: offsetWidth, height: offsetHeight })
+      }
+    })
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+      // Set initial size
+      const { offsetWidth, offsetHeight } = containerRef.current
+      setStageSize({ width: offsetWidth, height: offsetHeight })
+    }
+
+    return () => resizeObserver.disconnect()
   }, [])
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging) return
+  // Handle wheel zoom
+  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+    e.evt.preventDefault()
     
-    const deltaX = e.clientX - lastPosition.x
-    const deltaY = e.clientY - lastPosition.y
-    
-    setTransform(prev => ({
-      ...prev,
-      x: prev.x + deltaX,
-      y: prev.y + deltaY
-    }))
-    
-    setLastPosition({ x: e.clientX, y: e.clientY })
-  }, [isDragging, lastPosition])
+    const stage = stageRef.current
+    if (!stage) return
 
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
-  }, [])
-
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault()
-    const delta = e.deltaY > 0 ? 0.9 : 1.1
-    const newScale = Math.max(0.1, Math.min(5, transform.scale * delta))
+    const oldScale = stage.scaleX()
+    const pointer = stage.getPointerPosition()
     
-    setTransform(prev => ({
-      ...prev,
-      scale: newScale
-    }))
-  }, [transform.scale])
+    if (!pointer) return
+    
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    }
+
+    const scaleBy = 1.2
+    const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy
+    
+    // Limit zoom range
+    const clampedScale = Math.max(0.1, Math.min(5, newScale))
+    
+    const newPos = {
+      x: pointer.x - mousePointTo.x * clampedScale,
+      y: pointer.y - mousePointTo.y * clampedScale,
+    }
+
+    setStageScale(clampedScale)
+    setStagePosition(newPos)
+  }
+
+  // Handle stage drag end
+  const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
+    setStagePosition({
+      x: e.target.x(),
+      y: e.target.y(),
+    })
+  }
+
+  // Handle background click to deselect
+  const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // Only handle clicks on the stage itself (background)
+    if (e.target === e.target.getStage()) {
+      // Future: call selectComponent(null) when we implement selection
+    }
+  }
 
   return (
     <div
-      ref={canvasRef}
+      ref={containerRef}
       style={{
         position: 'absolute',
         top: 0,
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#f8f9fa',
-        cursor: isDragging ? 'grabbing' : 'grab',
-        overflow: 'hidden',
+        backgroundColor: '#f5f5f5',
+        cursor: 'grab',
         zIndex: 1
       }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
     >
-      {/* Canvas content with transform */}
-      <div
-        style={{
-          position: 'relative',
-          width: '2000px',
-          height: '2000px',
-          backgroundColor: '#ffffff',
-          border: '2px solid #e0e0e0',
-          borderRadius: '8px',
-          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-          transformOrigin: 'center center',
-          transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-        }}
+      <Stage
+        ref={stageRef}
+        width={stageSize.width}
+        height={stageSize.height}
+        onWheel={handleWheel}
+        draggable
+        x={stagePosition.x}
+        y={stagePosition.y}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        onDragEnd={handleDragEnd}
+        onClick={handleStageClick}
+        onTap={handleStageClick}
       >
-        {/* Canvas grid pattern */}
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            backgroundImage: `
-              linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            position: 'absolute',
-            top: 0,
-            left: 0
-          }}
-        />
-        
-        {/* Canvas content */}
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textAlign: 'center',
-          pointerEvents: 'none'
-        }}>
-          <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '24px' }}>Schematic Canvas</h3>
-          <p style={{ fontSize: '16px', color: '#666' }}>
-            Drag to pan • Scroll to zoom • Design your circuits here
-          </p>
-          <p style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>
-            Zoom: {Math.round(transform.scale * 100)}% | Position: ({Math.round(transform.x)}, {Math.round(transform.y)})
-          </p>
-        </div>
-      </div>
+        <Layer>
+          <Grid
+            width={stageSize.width}
+            height={stageSize.height}
+            scale={stageScale}
+            position={stagePosition}
+          />
+          {/* Future: render components here */}
+        </Layer>
+      </Stage>
     </div>
   )
 }
