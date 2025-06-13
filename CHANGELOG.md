@@ -1,12 +1,30 @@
-## [1.1.4](https://github.com/OmarAglan/SignalPath/compare/v1.1.3...v1.1.4) (2025-06-09)
+## [1.1.4](https://github.com/OmarAglan/SignalPath/compare/v1.1.3...v1.1.4) (2025-06-14)
 
+
+### Features
+
+* **component-library:** implement comprehensive component library with TypeScript interfaces
+  - Add ComponentDef interface with id, name, category, and symbol properties
+  - Create component library with three intercom-specific components
+  - Implement Resistor, Op-Amp LM386, and Electret Microphone definitions
+* **svg-icons:** create professional schematic symbols for all components
+  - Add resistor.svg with standard schematic representation
+  - Add opamp.svg with triangular amplifier symbol
+  - Add microphone.svg with electret microphone symbol
+* **drag-drop:** enhance ComponentPalette with HTML5 drag-and-drop functionality
+  - Implement draggable component items with proper data transfer
+  - Add visual feedback with hover effects and drag states
+  - Enable component ID transfer for canvas placement integration
+* **ui-improvements:** upgrade ComponentPalette with professional styling
+  - Add modern hover effects with smooth transitions
+  - Implement responsive design for different panel sizes
+  - Apply consistent dark theme styling throughout palette
+  - Enhance visual hierarchy with proper typography and spacing
 
 ### Bug Fixes
 
 * Update README with comprehensive project documentation ([4572192](https://github.com/OmarAglan/SignalPath/commit/457219270c8be3f59e275601dcf69d99580edea0))
-
 ## [1.1.3](https://github.com/OmarAglan/SignalPath/compare/v1.1.2...v1.1.3) (2025-06-09)
-
 
 ### Bug Fixes
 
@@ -14,13 +32,11 @@
 
 ## [1.1.2](https://github.com/OmarAglan/SignalPath/compare/v1.1.1...v1.1.2) (2025-06-09)
 
-
 ### Bug Fixes
 
 * build issues ([a72d4b8](https://github.com/OmarAglan/SignalPath/commit/a72d4b8c30165fef0044da6365b0869fd968c394))
 
 ## [1.1.1](https://github.com/OmarAglan/SignalPath/compare/v1.1.0...v1.1.1) (2025-06-09)
-
 
 ### Bug Fixes
 
@@ -28,13 +44,11 @@
 
 # [1.1.0](https://github.com/OmarAglan/SignalPath/compare/v1.0.0...v1.1.0) (2025-06-09)
 
-
 ### Features
 
 * Add app icons and configure build assets ([0ee3f05](https://github.com/OmarAglan/SignalPath/commit/0ee3f05b7a3e98b8cbd71fb733c244dc1c9a85eb))
 
 # 1.0.0 (2025-06-09)
-
 
 ### Features
 
@@ -47,28 +61,34 @@ All notable changes to this project will be documented in this file. See [standa
 ## [Unreleased]
 
 ### Added
+
 - Initial release of SignalPath Intercom Designer
-- Comprehensive GitHub Actions CI/CD pipeline
-- Cross-platform build support (Windows, macOS, Linux)
-- Automated semantic versioning and releases
-- Component palette for intercom system design
-- Interactive canvas for schematic editing
-- Properties panel for component configuration
-- Electron + React TypeScript architecture
+* Comprehensive GitHub Actions CI/CD pipeline
+* Cross-platform build support (Windows, macOS, Linux)
+* Automated semantic versioning and releases
+* Component palette for intercom system design
+* Interactive canvas for schematic editing
+* Properties panel for component configuration
+* Electron + React TypeScript architecture
 
 ### Changed
+
 - N/A
 
 ### Deprecated
+
 - N/A
 
 ### Removed
+
 - N/A
 
 ### Fixed
+
 - N/A
 
 ### Security
+
 - N/A
 
 ---

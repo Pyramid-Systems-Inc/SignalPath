@@ -20,14 +20,16 @@
 SignalPath Intercom Designer is a modern, cross-platform desktop application built for professional intercom system design and signal path visualization. The application combines an intuitive interface with powerful functionality to streamline your workflow.
 
 ### 🎯 Core Capabilities
-- **Interactive Component Palette** - Comprehensive library of intercom system components
-- **Visual Canvas Editor** - Drag-and-drop schematic design with real-time feedback  
+- **Interactive Component Palette** - Comprehensive library of intercom system components with drag-and-drop functionality
+- **Visual Canvas Editor** - Zoomable/pannable schematic design canvas with real-time feedback
 - **Properties Panel** - Advanced component configuration and parameter adjustment
 - **Signal Path Visualization** - Clear representation of audio signal routing
 - **Professional Output** - Export-ready schematics and documentation
 
 ### 🛠️ Technical Highlights
 - **Modern Architecture** - Built with Electron, React 19, and TypeScript
+- **Interactive Canvas** - React-Konva powered zoomable/pannable design surface
+- **Component Library** - TypeScript-based component definitions with SVG icons
 - **State Management** - Zustand for efficient application state handling
 - **Cross-Platform** - Native desktop application for Windows, macOS, and Linux
 - **Professional Packaging** - Code-signed installers with custom branding
