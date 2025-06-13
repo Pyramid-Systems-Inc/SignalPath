@@ -12,9 +12,9 @@ function App() {
       width: '100vw',
       overflow: 'hidden'
     }}>
-      <ComponentPalette />
-      <Canvas />
       <PropertiesPanel />
+      <Canvas />
+      <ComponentPalette />
     </div>
   )
 }

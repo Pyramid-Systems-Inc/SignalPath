@@ -11,7 +11,7 @@ const Canvas: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRight: '1px solid #ccc'
+      minWidth: 0
     }}>
       <div style={{ textAlign: 'center' }}>
         <h3 style={{ margin: '0 0 16px 0', color: '#333' }}>Canvas</h3>
