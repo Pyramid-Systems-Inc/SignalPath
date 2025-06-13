@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Stage, Layer } from 'react-konva'
 import Konva from 'konva'
 import Grid from './Grid'
+import { useSchematicStore } from '../store/schematicStore'
+import SchematicComponent from './SchematicComponent'
 
 const Canvas: React.FC = () => {
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 })
@@ -9,6 +11,8 @@ const Canvas: React.FC = () => {
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
+  const addComponent = useSchematicStore((state) => state.addComponent)
+  const components = useSchematicStore((state) => state.components)
 
   // Handle container resizing
   useEffect(() => {
@@ -77,9 +81,41 @@ const Canvas: React.FC = () => {
     }
   }
 
+  // Handle drag over to allow drops
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+
+  // Handle component drop from palette
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    
+    // Get the library ID from the drag data
+    const libraryId = e.dataTransfer.getData('text/plain')
+    if (!libraryId) return
+
+    // Calculate drop position relative to canvas, accounting for pan/zoom
+    const containerRect = containerRef.current?.getBoundingClientRect()
+    if (!containerRect) return
+
+    // Get mouse position relative to container
+    const dropX = e.clientX - containerRect.left
+    const dropY = e.clientY - containerRect.top
+
+    // Convert screen coordinates to canvas coordinates
+    // Account for current pan and zoom transforms
+    const canvasX = (dropX - stagePosition.x) / stageScale
+    const canvasY = (dropY - stagePosition.y) / stageScale
+
+    // Add component to store
+    addComponent(libraryId, { x: canvasX, y: canvasY })
+  }
+
   return (
     <div
       ref={containerRef}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       style={{
         position: 'absolute',
         top: 0,
@@ -112,7 +148,10 @@ const Canvas: React.FC = () => {
             scale={stageScale}
             position={stagePosition}
           />
-          {/* Future: render components here */}
+          {/* Render all components from store */}
+          {components.map((component) => (
+            <SchematicComponent key={component.id} component={component} />
+          ))}
         </Layer>
       </Stage>
     </div>

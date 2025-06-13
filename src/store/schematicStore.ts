@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { nanoid } from 'nanoid'
 
 // TypeScript interfaces
 export interface Component {
@@ -17,7 +18,7 @@ export interface Net {
 export interface SchematicState {
   components: Component[]
   nets: Net[]
-  addComponent: (component: Component) => void
+  addComponent: (libraryId: string, position: { x: number; y: number }) => void
   removeComponent: (id: string) => void
   updateComponent: (id: string, updates: Partial<Component>) => void
   addNet: (net: Net) => void
@@ -30,9 +31,14 @@ export const useSchematicStore = create<SchematicState>((set) => ({
   components: [],
   nets: [],
   
-  addComponent: (component) =>
+  addComponent: (libraryId, position) =>
     set((state) => ({
-      components: [...state.components, component],
+      components: [...state.components, {
+        id: nanoid(),
+        libraryId,
+        position,
+        rotation: 0
+      }],
     })),
   
   removeComponent: (id) =>
