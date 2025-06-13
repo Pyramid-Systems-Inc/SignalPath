@@ -1,3 +1,20 @@
+# [2.0.0](https://github.com/Pyramid-Systems-Inc/SignalPath/compare/v1.1.4...v2.0.0) (2025-06-13)
+
+
+### Features
+
+* Add schematic component system with drag-and-drop functionality ([05e0214](https://github.com/Pyramid-Systems-Inc/SignalPath/commit/05e02148166b4e75c4375ba54c6f8d88437791f1))
+
+
+### BREAKING CHANGES
+
+* - Add nanoid dependency for unique component IDs
+- Create SchematicComponent for rendering components on canvas
+- Implement drag-and-drop from component palette to canvas
+- Add component management to schematic store
+- Create symbols directory for component symbol definitions
+- Enable canvas coordinate transformation for accurate drop positioning
+
 ## [1.1.4](https://github.com/OmarAglan/SignalPath/compare/v1.1.3...v1.1.4) (2025-06-14)
 
 
