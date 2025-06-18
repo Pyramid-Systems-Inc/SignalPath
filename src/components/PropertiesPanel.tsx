@@ -3,7 +3,7 @@ import { useSchematicStore } from '../store/schematicStore'
 import { componentLibrary } from '../lib/componentLibrary'
 
 const PropertiesPanel: React.FC = () => {
-  const { selectedComponentId, components, updateComponentProperties } = useSchematicStore()
+  const { selectedComponentId, components, updateComponentProperties, deleteComponent } = useSchematicStore()
 
   // Find the selected component
   const selectedComponent = selectedComponentId
@@ -20,6 +20,13 @@ const PropertiesPanel: React.FC = () => {
   const handleRefDesChange = (newRefDes: string) => {
     if (selectedComponent) {
       updateComponentProperties(selectedComponent.id, { refDes: newRefDes })
+    }
+  }
+
+  // Handle component deletion
+  const handleDeleteComponent = () => {
+    if (selectedComponent) {
+      deleteComponent(selectedComponent.id)
     }
   }
 
@@ -117,6 +124,33 @@ const PropertiesPanel: React.FC = () => {
               }}
               placeholder="Enter reference designator"
             />
+          </div>
+
+          {/* Delete Button */}
+          <div style={{ marginTop: '20px' }}>
+            <button
+              onClick={handleDeleteComponent}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                backgroundColor: '#dc3545',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#c82333'
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#dc3545'
+              }}
+            >
+              🗑️ Delete Component
+            </button>
           </div>
         </div>
       ) : (

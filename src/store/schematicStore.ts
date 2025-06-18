@@ -28,6 +28,7 @@ export interface SchematicState {
   hoveredComponentId: string | null
   addComponent: (libraryId: string, position: { x: number; y: number }) => void
   removeComponent: (id: string) => void
+  deleteComponent: (id: string) => void
   updateComponent: (id: string, updates: Partial<Component>) => void
   moveComponent: (id: string, position: { x: number; y: number }) => void
   selectComponent: (id: string | null) => void
@@ -74,6 +75,12 @@ export const useSchematicStore = create<SchematicState>((set) => ({
   removeComponent: (id) =>
     set((state) => ({
       components: state.components.filter((component) => component.id !== id),
+    })),
+
+  deleteComponent: (id) =>
+    set((state) => ({
+      components: state.components.filter((component) => component.id !== id),
+      selectedComponentId: state.selectedComponentId === id ? null : state.selectedComponentId,
     })),
   
   updateComponent: (id, updates) =>
