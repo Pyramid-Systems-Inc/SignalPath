@@ -23,7 +23,12 @@ SignalPath Intercom Designer is a modern, cross-platform desktop application bui
 
 - **Interactive Component Palette** - Comprehensive library of intercom system components with drag-and-drop functionality
 - **Visual Canvas Editor** - Zoomable/pannable schematic design canvas with real-time feedback and component placement
-- **Component Placement System** - Full drag-and-drop workflow from palette to canvas with professional symbol rendering
+- **Complete Component Interaction** - Professional selection, drag-to-move, properties editing, and deletion workflows
+- **Component Lifecycle Management** - Full Place → Select → Move → Edit → Delete functionality with visual feedback
+- **Real-time Properties Editing** - Dynamic component properties panel with form-based editing and immediate updates
+- **Professional Selection System** - Click-based component selection with visual highlighting and state management
+- **Grid-Snapped Movement** - Smooth drag-to-move functionality with grid alignment and precise positioning
+- **Multiple Deletion Methods** - Keyboard shortcuts (Delete/Backspace) and visual delete buttons for component removal
 - **Schematic Symbol Rendering** - Professional react-konva powered symbols for resistors, op-amps, and microphones
 - **State Management** - Real-time component tracking and persistent schematic state with Zustand
 - **Interactive Design Surface** - Pan, zoom, and grid functionality for precise component positioning
@@ -246,21 +251,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ![Current Version](https://img.shields.io/github/v/release/OmarAglan/SignalPath?style=for-the-badge)
 
-**Status**: ✅ **Stage 1 Complete - Functional Schematic Editor**
+**Status**: ✅ **Stage 2 Complete - Professional Component Interaction System**
 
-SignalPath has achieved a major milestone with Stage 1 completion. The project now features:
+SignalPath has achieved another major milestone with Stage 2 completion. The project now features:
 
+- ✅ **Complete Component Interaction System** - Professional Place → Select → Move → Edit → Delete workflow
+- ✅ **Visual Selection System** - Click-based component selection with highlighting and state management
+- ✅ **Drag-to-Move Functionality** - Smooth component repositioning with grid snapping and real-time updates
+- ✅ **Properties Panel Integration** - Real-time component property editing with form synchronization
+- ✅ **Multiple Deletion Methods** - Keyboard shortcuts (Delete/Backspace) and visual delete buttons
+- ✅ **Enhanced UX Features** - Hover effects, cursor management, auto-selection, and visual feedback
 - ✅ **Functional Schematic Editor** - Full component placement system operational
 - ✅ **Interactive Canvas** - Professional pan/zoom/grid functionality with react-konva
 - ✅ **Component Library** - Drag-and-drop palette with intercom-specific components
 - ✅ **Symbol Rendering** - Professional schematic symbols for resistors, op-amps, and microphones
-- ✅ **Real-time Workflow** - Seamless drag-and-drop from palette to canvas with immediate visual feedback
 - ✅ **State Management** - Complete Zustand integration with TypeScript support
 - ✅ **Cross-platform Desktop Application** - Modern Electron + React architecture
 - ✅ **Professional CI/CD Pipeline** - Automated releases and comprehensive documentation
-- ✅ **Ready for Stage 2** - Foundation prepared for component interaction and properties
+- ✅ **Ready for Stage 3** - Foundation prepared for wiring and net creation
 
-**Current Capabilities**: Users can now create basic intercom schematic layouts by dragging components from the palette and placing them on the interactive canvas.
+**Current Capabilities**: Users can now create professional intercom schematic layouts with complete component interaction - placing, selecting, moving, editing properties, and deleting components through an intuitive interface with immediate visual feedback.
 
 ---
 

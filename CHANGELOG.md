@@ -1,3 +1,48 @@
+# [4.0.0](https://github.com/Pyramid-Systems-Inc/SignalPath/compare/v3.0.0...v4.0.0) (2025-06-18)
+
+### Features
+
+* **stage-2-complete:** MAJOR MILESTONE - Complete Stage 2: Component Interaction & Properties
+  - ✅ Component selection system with visual highlighting and click-based interaction
+  - ✅ Drag-to-move functionality with grid snapping and smooth component repositioning
+  - ✅ Properties panel integration with real-time editing and form synchronization
+  - ✅ Component deletion with keyboard shortcuts (Delete/Backspace) and visual delete buttons
+  - ✅ Auto-selection management and enhanced UX with hover effects and cursor management
+  - ✅ Complete component lifecycle: Place → Select → Move → Edit → Delete
+  - ✅ Professional-grade interaction patterns with immediate visual feedback
+  - ✅ Comprehensive Zustand state management integration with TypeScript support
+
+* **component-selection:** implement professional component selection system
+  - Add selectedComponentId state management with visual highlighting
+  - Enable click-based component selection with react-konva event handling
+  - Implement selection clearing on canvas background click
+  - Provide visual feedback with selection highlighting and bounding boxes
+
+* **drag-to-move:** create smooth component repositioning functionality
+  - Add moveComponent action with grid snapping capabilities
+  - Implement drag event handling with precise coordinate mapping
+  - Enable real-time position updates during drag operations
+  - Integrate grid alignment for professional component placement
+
+* **properties-editing:** establish real-time properties panel integration
+  - Add updateComponentProperties action for dynamic property management
+  - Create form-based property editing with immediate state synchronization
+  - Implement component properties display with reference designator editing
+  - Enable real-time updates reflecting changes across the application
+
+* **component-deletion:** implement comprehensive deletion functionality
+  - Add deleteComponent action with proper state cleanup and selection management
+  - Create global keyboard listener for Delete/Backspace key handling
+  - Implement visual delete buttons with hover effects and mouse-based deletion
+  - Ensure proper event listener cleanup and memory management
+
+### BREAKING CHANGES
+
+* **architecture:** Complete Stage 2 represents a major architectural milestone
+  - Professional-grade component interaction system now available
+  - All Stage 2 components (Steps 2.1-2.4) fully operational with enhanced UX
+  - Ready for Stage 3: Wiring and Net Creation
+
 # [3.0.0](https://github.com/Pyramid-Systems-Inc/SignalPath/compare/v2.0.0...v3.0.0) (2025-06-18)
 
 
