@@ -26,7 +26,7 @@ export interface SchematicState {
   nets: Net[]
   selectedComponentId: string | null
   hoveredComponentId: string | null
-  addComponent: (libraryId: string, position: { x: number; y: number }) => void
+  addComponent: (libraryId: string, position: { x: number; y: number }) => string
   removeComponent: (id: string) => void
   deleteComponent: (id: string) => void
   updateComponent: (id: string, updates: Partial<Component>) => void
@@ -61,15 +61,21 @@ export const useSchematicStore = create<SchematicState>((set) => ({
       }
     }
 
+    const newComponentId = nanoid()
+    const newComponent = {
+      id: newComponentId,
+      libraryId,
+      position,
+      rotation: 0,
+      properties: getDefaultProperties(libraryId)
+    }
+
     set((state) => ({
-      components: [...state.components, {
-        id: nanoid(),
-        libraryId,
-        position,
-        rotation: 0,
-        properties: getDefaultProperties(libraryId)
-      }],
+      components: [...state.components, newComponent],
+      selectedComponentId: newComponentId
     }))
+
+    return newComponentId
   },
   
   removeComponent: (id) =>
