@@ -1,5 +1,6 @@
 import React from 'react';
 import { Group, Rect } from 'react-konva';
+import type { KonvaEventObject } from 'konva/lib/Node';
 import type { Component } from '../store/schematicStore';
 import { useSchematicStore } from '../store/schematicStore';
 import { ResistorSymbol, OpAmpSymbol, MicrophoneSymbol } from './symbols';
@@ -11,7 +12,29 @@ interface SchematicComponentProps {
 const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) => {
   const { id, libraryId, position, rotation } = component;
   const selectedComponentId = useSchematicStore((state) => state.selectedComponentId);
+  const moveComponent = useSchematicStore((state) => state.moveComponent);
   const isSelected = selectedComponentId === id;
+
+  const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
+    // Prevent event propagation to stop canvas from dragging
+    e.cancelBubble = true;
+  };
+
+  const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+    // Prevent event propagation during drag to stop canvas from dragging
+    e.cancelBubble = true;
+  };
+
+  const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
+    // Prevent event propagation
+    e.cancelBubble = true;
+    
+    const position = e.target.position();
+    // Grid snapping with 10px grid
+    const snappedX = Math.round(position.x / 10) * 10;
+    const snappedY = Math.round(position.y / 10) * 10;
+    moveComponent(id, { x: snappedX, y: snappedY });
+  };
 
   // Get symbol dimensions for selection highlighting
   const getSymbolBounds = (libraryId: string) => {
@@ -70,7 +93,15 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
   };
 
   return (
-    <Group x={position.x} y={position.y} rotation={rotation}>
+    <Group
+      x={position.x}
+      y={position.y}
+      rotation={rotation}
+      draggable={true}
+      onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
+      onDragEnd={handleDragEnd}
+    >
       {/* Selection highlight - render behind the symbol */}
       {isSelected && (
         <Rect
