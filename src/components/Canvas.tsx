@@ -13,6 +13,7 @@ const Canvas: React.FC = () => {
   const stageRef = useRef<Konva.Stage>(null)
   const addComponent = useSchematicStore((state) => state.addComponent)
   const components = useSchematicStore((state) => state.components)
+  const selectComponent = useSchematicStore((state) => state.selectComponent)
 
   // Handle container resizing
   useEffect(() => {
@@ -77,7 +78,7 @@ const Canvas: React.FC = () => {
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
     // Only handle clicks on the stage itself (background)
     if (e.target === e.target.getStage()) {
-      // Future: call selectComponent(null) when we implement selection
+      selectComponent(null)
     }
   }
 

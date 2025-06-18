@@ -1,5 +1,7 @@
 import React from 'react';
+import { Group, Rect } from 'react-konva';
 import type { Component } from '../store/schematicStore';
+import { useSchematicStore } from '../store/schematicStore';
 import { ResistorSymbol, OpAmpSymbol, MicrophoneSymbol } from './symbols';
 
 interface SchematicComponentProps {
@@ -7,42 +9,86 @@ interface SchematicComponentProps {
 }
 
 const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) => {
-  const { libraryId, position, rotation } = component;
+  const { id, libraryId, position, rotation } = component;
+  const selectedComponentId = useSchematicStore((state) => state.selectedComponentId);
+  const isSelected = selectedComponentId === id;
 
-  // Switch between different symbol components based on library ID
-  switch (libraryId) {
-    case 'RESISTOR_GENERIC':
-      return (
-        <ResistorSymbol
-          x={position.x}
-          y={position.y}
-          rotation={rotation}
+  // Get symbol dimensions for selection highlighting
+  const getSymbolBounds = (libraryId: string) => {
+    switch (libraryId) {
+      case 'RESISTOR_GENERIC':
+        return { width: 44, height: 16, offsetX: -22, offsetY: -8 };
+      case 'OPAMP_LM386':
+        return { width: 64, height: 34, offsetX: -32, offsetY: -17 };
+      case 'ELECTRET_MICROPHONE':
+        return { width: 28, height: 48, offsetX: -14, offsetY: -24 };
+      default:
+        return { width: 44, height: 16, offsetX: -22, offsetY: -8 };
+    }
+  };
+
+  const bounds = getSymbolBounds(libraryId);
+
+  // Render the symbol component based on library ID
+  const renderSymbol = () => {
+    switch (libraryId) {
+      case 'RESISTOR_GENERIC':
+        return (
+          <ResistorSymbol
+            id={id}
+            x={0}
+            y={0}
+            rotation={0}
+          />
+        );
+      
+      case 'OPAMP_LM386':
+        return (
+          <OpAmpSymbol
+            id={id}
+            x={0}
+            y={0}
+            rotation={0}
+          />
+        );
+      
+      case 'ELECTRET_MICROPHONE':
+        return (
+          <MicrophoneSymbol
+            id={id}
+            x={0}
+            y={0}
+            rotation={0}
+          />
+        );
+      
+      default:
+        // Fallback for unknown component types
+        console.warn(`Unknown component library ID: ${libraryId}`);
+        return null;
+    }
+  };
+
+  return (
+    <Group x={position.x} y={position.y} rotation={rotation}>
+      {/* Selection highlight - render behind the symbol */}
+      {isSelected && (
+        <Rect
+          x={bounds.offsetX - 2}
+          y={bounds.offsetY - 2}
+          width={bounds.width + 4}
+          height={bounds.height + 4}
+          fill="rgba(0, 123, 255, 0.2)"
+          stroke="#007bff"
+          strokeWidth={2}
+          cornerRadius={2}
         />
-      );
-    
-    case 'OPAMP_LM386':
-      return (
-        <OpAmpSymbol
-          x={position.x}
-          y={position.y}
-          rotation={rotation}
-        />
-      );
-    
-    case 'ELECTRET_MICROPHONE':
-      return (
-        <MicrophoneSymbol
-          x={position.x}
-          y={position.y}
-          rotation={rotation}
-        />
-      );
-    
-    default:
-      // Fallback for unknown component types
-      console.warn(`Unknown component library ID: ${libraryId}`);
-      return null;
-  }
+      )}
+      
+      {/* Render the symbol */}
+      {renderSymbol()}
+    </Group>
+  );
 };
 
 export default SchematicComponent;

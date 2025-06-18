@@ -1,15 +1,31 @@
 import React from 'react';
 import { Group, Circle, Line } from 'react-konva';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import { useSchematicStore } from '../../store/schematicStore';
 
 interface MicrophoneSymbolProps {
+  id: string;
   x: number;
   y: number;
   rotation: number;
 }
 
-const MicrophoneSymbol: React.FC<MicrophoneSymbolProps> = ({ x, y, rotation }) => {
+const MicrophoneSymbol: React.FC<MicrophoneSymbolProps> = ({ id, x, y, rotation }) => {
+  const selectComponent = useSchematicStore((state) => state.selectComponent);
+
+  const handleClick = (e: KonvaEventObject<MouseEvent>) => {
+    e.cancelBubble = true; // Prevent event propagation to canvas
+    selectComponent(id);
+  };
+
   return (
-    <Group x={x} y={y} rotation={rotation}>
+    <Group
+      x={x}
+      y={y}
+      rotation={rotation}
+      onClick={handleClick}
+      onTap={handleClick}
+    >
       {/* Microphone capsule (circle) */}
       <Circle
         x={0}

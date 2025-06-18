@@ -1,15 +1,31 @@
 import React from 'react';
 import { Group, Line, Text } from 'react-konva';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import { useSchematicStore } from '../../store/schematicStore';
 
 interface OpAmpSymbolProps {
+  id: string;
   x: number;
   y: number;
   rotation: number;
 }
 
-const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ x, y, rotation }) => {
+const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ id, x, y, rotation }) => {
+  const selectComponent = useSchematicStore((state) => state.selectComponent);
+
+  const handleClick = (e: KonvaEventObject<MouseEvent>) => {
+    e.cancelBubble = true; // Prevent event propagation to canvas
+    selectComponent(id);
+  };
+
   return (
-    <Group x={x} y={y} rotation={rotation}>
+    <Group
+      x={x}
+      y={y}
+      rotation={rotation}
+      onClick={handleClick}
+      onTap={handleClick}
+    >
       {/* Triangle body of op-amp */}
       <Line
         points={[-20, -15, -20, 15, 20, 0, -20, -15]}

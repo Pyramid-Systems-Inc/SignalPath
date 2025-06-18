@@ -18,9 +18,11 @@ export interface Net {
 export interface SchematicState {
   components: Component[]
   nets: Net[]
+  selectedComponentId: string | null
   addComponent: (libraryId: string, position: { x: number; y: number }) => void
   removeComponent: (id: string) => void
   updateComponent: (id: string, updates: Partial<Component>) => void
+  selectComponent: (id: string | null) => void
   addNet: (net: Net) => void
   removeNet: (id: string) => void
   updateNet: (id: string, updates: Partial<Net>) => void
@@ -30,6 +32,7 @@ export interface SchematicState {
 export const useSchematicStore = create<SchematicState>((set) => ({
   components: [],
   nets: [],
+  selectedComponentId: null,
   
   addComponent: (libraryId, position) =>
     set((state) => ({
@@ -51,6 +54,11 @@ export const useSchematicStore = create<SchematicState>((set) => ({
       components: state.components.map((component) =>
         component.id === id ? { ...component, ...updates } : component
       ),
+    })),
+  
+  selectComponent: (id) =>
+    set(() => ({
+      selectedComponentId: id,
     })),
   
   addNet: (net) =>

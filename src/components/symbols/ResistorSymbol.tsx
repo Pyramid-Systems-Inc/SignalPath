@@ -1,15 +1,31 @@
 import React from 'react';
 import { Group, Rect, Line } from 'react-konva';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import { useSchematicStore } from '../../store/schematicStore';
 
 interface ResistorSymbolProps {
+  id: string;
   x: number;
   y: number;
   rotation: number;
 }
 
-const ResistorSymbol: React.FC<ResistorSymbolProps> = ({ x, y, rotation }) => {
+const ResistorSymbol: React.FC<ResistorSymbolProps> = ({ id, x, y, rotation }) => {
+  const selectComponent = useSchematicStore((state) => state.selectComponent);
+
+  const handleClick = (e: KonvaEventObject<MouseEvent>) => {
+    e.cancelBubble = true; // Prevent event propagation to canvas
+    selectComponent(id);
+  };
+
   return (
-    <Group x={x} y={y} rotation={rotation}>
+    <Group
+      x={x}
+      y={y}
+      rotation={rotation}
+      onClick={handleClick}
+      onTap={handleClick}
+    >
       {/* Left connection line */}
       <Line
         points={[-20, 0, -10, 0]}
