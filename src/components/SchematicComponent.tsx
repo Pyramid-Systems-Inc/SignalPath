@@ -14,6 +14,7 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
   const selectedComponentId = useSchematicStore((state) => state.selectedComponentId);
   const moveComponent = useSchematicStore((state) => state.moveComponent);
   const isSelected = selectedComponentId === id;
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
     // Prevent event propagation to stop canvas from dragging
@@ -34,6 +35,24 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
     const snappedX = Math.round(position.x / 10) * 10;
     const snappedY = Math.round(position.y / 10) * 10;
     moveComponent(id, { x: snappedX, y: snappedY });
+  };
+
+  const handleMouseEnter = (e: KonvaEventObject<MouseEvent>) => {
+    setIsHovered(true);
+    // Change cursor to pointer on the stage container
+    const stage = e.target.getStage();
+    if (stage) {
+      stage.container().style.cursor = 'pointer';
+    }
+  };
+
+  const handleMouseLeave = (e: KonvaEventObject<MouseEvent>) => {
+    setIsHovered(false);
+    // Reset cursor to grab (canvas default)
+    const stage = e.target.getStage();
+    if (stage) {
+      stage.container().style.cursor = 'grab';
+    }
   };
 
   // Get symbol dimensions for selection highlighting
@@ -101,6 +120,8 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
       onDragStart={handleDragStart}
       onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Selection highlight - render behind the symbol */}
       {isSelected && (
@@ -113,6 +134,21 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
           stroke="#007bff"
           strokeWidth={2}
           cornerRadius={2}
+        />
+      )}
+
+      {/* Hover highlight - render behind the symbol but above selection */}
+      {isHovered && !isSelected && (
+        <Rect
+          x={bounds.offsetX - 1}
+          y={bounds.offsetY - 1}
+          width={bounds.width + 2}
+          height={bounds.height + 2}
+          fill="rgba(0, 123, 255, 0.1)"
+          stroke="#007bff"
+          strokeWidth={1}
+          cornerRadius={2}
+          opacity={0.8}
         />
       )}
       
