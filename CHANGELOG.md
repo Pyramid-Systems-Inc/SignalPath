@@ -1,3 +1,13 @@
+# [3.0.0](https://github.com/Pyramid-Systems-Inc/SignalPath/compare/v2.0.0...v3.0.0) (2025-06-18)
+
+
+* Release v2.0.0: Complete Stage 1 - Canvas & Component Placement ([000a5fc](https://github.com/Pyramid-Systems-Inc/SignalPath/commit/000a5fc1aaf14cb315b3a59125937a7ded15e603))
+
+
+### BREAKING CHANGES
+
+* Stage 1 architectural milestone - functional schematic editor now available
+
 ## [2.0.0](https://github.com/OmarAglan/SignalPath/compare/v1.1.4...v2.0.0) (2025-06-14)
 
 ### Features
