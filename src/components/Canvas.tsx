@@ -14,6 +14,7 @@ const Canvas: React.FC = () => {
   const addComponent = useSchematicStore((state) => state.addComponent)
   const components = useSchematicStore((state) => state.components)
   const selectComponent = useSchematicStore((state) => state.selectComponent)
+  const hoveredComponentId = useSchematicStore((state) => state.hoveredComponentId)
 
   // Handle container resizing
   useEffect(() => {
@@ -112,6 +113,11 @@ const Canvas: React.FC = () => {
     addComponent(libraryId, { x: canvasX, y: canvasY })
   }
 
+  // Determine cursor style based on hover state
+  const getCursorStyle = () => {
+    return hoveredComponentId ? 'pointer' : 'grab'
+  }
+
   return (
     <div
       ref={containerRef}
@@ -124,7 +130,7 @@ const Canvas: React.FC = () => {
         width: '100vw',
         height: '100vh',
         backgroundColor: '#f5f5f5',
-        cursor: 'grab',
+        cursor: getCursorStyle(),
         zIndex: 1
       }}
     >

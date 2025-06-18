@@ -25,11 +25,13 @@ export interface SchematicState {
   components: Component[]
   nets: Net[]
   selectedComponentId: string | null
+  hoveredComponentId: string | null
   addComponent: (libraryId: string, position: { x: number; y: number }) => void
   removeComponent: (id: string) => void
   updateComponent: (id: string, updates: Partial<Component>) => void
   moveComponent: (id: string, position: { x: number; y: number }) => void
   selectComponent: (id: string | null) => void
+  setHoveredComponent: (id: string | null) => void
   updateComponentProperties: (id: string, newProperties: Partial<ComponentProperties>) => void
   addNet: (net: Net) => void
   removeNet: (id: string) => void
@@ -41,6 +43,7 @@ export const useSchematicStore = create<SchematicState>((set) => ({
   components: [],
   nets: [],
   selectedComponentId: null,
+  hoveredComponentId: null,
   
   addComponent: (libraryId, position) => {
     // Define default properties based on component type
@@ -90,6 +93,11 @@ export const useSchematicStore = create<SchematicState>((set) => ({
   selectComponent: (id) =>
     set(() => ({
       selectedComponentId: id,
+    })),
+
+  setHoveredComponent: (id) =>
+    set(() => ({
+      hoveredComponentId: id,
     })),
 
   updateComponentProperties: (id, newProperties) =>

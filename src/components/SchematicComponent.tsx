@@ -12,9 +12,11 @@ interface SchematicComponentProps {
 const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) => {
   const { id, libraryId, position, rotation } = component;
   const selectedComponentId = useSchematicStore((state) => state.selectedComponentId);
+  const hoveredComponentId = useSchematicStore((state) => state.hoveredComponentId);
   const moveComponent = useSchematicStore((state) => state.moveComponent);
+  const setHoveredComponent = useSchematicStore((state) => state.setHoveredComponent);
   const isSelected = selectedComponentId === id;
-  const [isHovered, setIsHovered] = React.useState(false);
+  const isHovered = hoveredComponentId === id;
 
   const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
     // Prevent event propagation to stop canvas from dragging
@@ -37,22 +39,12 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
     moveComponent(id, { x: snappedX, y: snappedY });
   };
 
-  const handleMouseEnter = (e: KonvaEventObject<MouseEvent>) => {
-    setIsHovered(true);
-    // Change cursor to pointer on the stage container
-    const stage = e.target.getStage();
-    if (stage) {
-      stage.container().style.cursor = 'pointer';
-    }
+  const handleMouseEnter = () => {
+    setHoveredComponent(id);
   };
 
-  const handleMouseLeave = (e: KonvaEventObject<MouseEvent>) => {
-    setIsHovered(false);
-    // Reset cursor to grab (canvas default)
-    const stage = e.target.getStage();
-    if (stage) {
-      stage.container().style.cursor = 'grab';
-    }
+  const handleMouseLeave = () => {
+    setHoveredComponent(null);
   };
 
   // Get symbol dimensions for selection highlighting
