@@ -24,6 +24,7 @@ export interface Net {
 export interface WiringState {
   active: boolean
   startPin: { componentId: string; pinId: string } | null
+  startPos: { x: number; y: number } | null
   currentPos: { x: number; y: number } | null
 }
 
@@ -58,6 +59,7 @@ export const useSchematicStore = create<SchematicState>((set) => ({
   wiringState: {
     active: false,
     startPin: null,
+    startPos: null,
     currentPos: null
   },
   
@@ -160,6 +162,7 @@ export const useSchematicStore = create<SchematicState>((set) => ({
       wiringState: {
         active: true,
         startPin: { componentId, pinId },
+        startPos: startPos,
         currentPos: startPos
       }
     })),
@@ -177,6 +180,7 @@ export const useSchematicStore = create<SchematicState>((set) => ({
       wiringState: {
         active: false,
         startPin: null,
+        startPos: null,
         currentPos: null
       }
     })),

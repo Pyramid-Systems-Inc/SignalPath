@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Stage, Layer } from 'react-konva'
+import { Stage, Layer, Line } from 'react-konva'
 import Konva from 'konva'
 import Grid from './Grid'
 import { useSchematicStore } from '../store/schematicStore'
@@ -15,6 +15,8 @@ const Canvas: React.FC = () => {
   const components = useSchematicStore((state) => state.components)
   const selectComponent = useSchematicStore((state) => state.selectComponent)
   const hoveredComponentId = useSchematicStore((state) => state.hoveredComponentId)
+  const wiringState = useSchematicStore((state) => state.wiringState)
+  const updateWire = useSchematicStore((state) => state.updateWire)
 
   // Handle container resizing
   useEffect(() => {
@@ -83,6 +85,25 @@ const Canvas: React.FC = () => {
     }
   }
 
+  // Handle mouse move for rubber band wire
+  const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // Only update wire position if we're in wiring mode
+    if (!wiringState.active) return
+
+    const stage = stageRef.current
+    if (!stage) return
+
+    const pointer = stage.getPointerPosition()
+    if (!pointer) return
+
+    // Convert screen coordinates to stage coordinates
+    // Account for current pan and zoom transforms
+    const stageX = (pointer.x - stagePosition.x) / stageScale
+    const stageY = (pointer.y - stagePosition.y) / stageScale
+
+    updateWire({ x: stageX, y: stageY })
+  }
+
   // Handle drag over to allow drops
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -147,6 +168,7 @@ const Canvas: React.FC = () => {
         onDragEnd={handleDragEnd}
         onClick={handleStageClick}
         onTap={handleStageClick}
+        onMouseMove={handleMouseMove}
       >
         <Layer>
           <Grid
@@ -159,6 +181,23 @@ const Canvas: React.FC = () => {
           {components.map((component) => (
             <SchematicComponent key={component.id} component={component} />
           ))}
+
+          {/* Render rubber band wire when in wiring mode */}
+          {wiringState.active && wiringState.startPos && wiringState.currentPos && (
+            <Line
+              points={[
+                wiringState.startPos.x,
+                wiringState.startPos.y,
+                wiringState.currentPos.x,
+                wiringState.currentPos.y
+              ]}
+              stroke="#00ff00"
+              strokeWidth={2}
+              dash={[5, 5]}
+              lineCap="round"
+              listening={false} // Don't interfere with mouse events
+            />
+          )}
         </Layer>
       </Stage>
     </div>
