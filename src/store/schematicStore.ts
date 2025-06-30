@@ -21,11 +21,18 @@ export interface Net {
   points: { x: number; y: number }[]
 }
 
+export interface WiringState {
+  active: boolean
+  startPin: { componentId: string; pinId: string } | null
+  currentPos: { x: number; y: number } | null
+}
+
 export interface SchematicState {
   components: Component[]
   nets: Net[]
   selectedComponentId: string | null
   hoveredComponentId: string | null
+  wiringState: WiringState
   addComponent: (libraryId: string, position: { x: number; y: number }) => string
   removeComponent: (id: string) => void
   deleteComponent: (id: string) => void
@@ -37,6 +44,9 @@ export interface SchematicState {
   addNet: (net: Net) => void
   removeNet: (id: string) => void
   updateNet: (id: string, updates: Partial<Net>) => void
+  startWire: (componentId: string, pinId: string, startPos: { x: number; y: number }) => void
+  updateWire: (newPos: { x: number; y: number }) => void
+  endWire: () => void
 }
 
 // Zustand store
@@ -45,6 +55,11 @@ export const useSchematicStore = create<SchematicState>((set) => ({
   nets: [],
   selectedComponentId: null,
   hoveredComponentId: null,
+  wiringState: {
+    active: false,
+    startPin: null,
+    currentPos: null
+  },
   
   addComponent: (libraryId, position) => {
     // Define default properties based on component type
@@ -137,5 +152,32 @@ export const useSchematicStore = create<SchematicState>((set) => ({
       nets: state.nets.map((net) =>
         net.id === id ? { ...net, ...updates } : net
       ),
+    })),
+
+  // Wiring actions
+  startWire: (componentId, pinId, startPos) =>
+    set(() => ({
+      wiringState: {
+        active: true,
+        startPin: { componentId, pinId },
+        currentPos: startPos
+      }
+    })),
+
+  updateWire: (newPos) =>
+    set((state) => ({
+      wiringState: {
+        ...state.wiringState,
+        currentPos: newPos
+      }
+    })),
+
+  endWire: () =>
+    set(() => ({
+      wiringState: {
+        active: false,
+        startPin: null,
+        currentPos: null
+      }
     })),
 }))

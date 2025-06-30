@@ -70,26 +70,32 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
         return (
           <ResistorSymbol
             id={id}
+            libraryId={libraryId}
+            componentPosition={position}
             x={0}
             y={0}
             rotation={0}
           />
         );
-      
+
       case 'OPAMP_LM386':
         return (
           <OpAmpSymbol
             id={id}
+            libraryId={libraryId}
+            componentPosition={position}
             x={0}
             y={0}
             rotation={0}
           />
         );
-      
+
       case 'ELECTRET_MICROPHONE':
         return (
           <MicrophoneSymbol
             id={id}
+            libraryId={libraryId}
+            componentPosition={position}
             x={0}
             y={0}
             rotation={0}
