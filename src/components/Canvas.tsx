@@ -4,6 +4,7 @@ import Konva from 'konva'
 import Grid from './Grid'
 import { useSchematicStore } from '../store/schematicStore'
 import SchematicComponent from './SchematicComponent'
+import { componentLibrary } from '../lib/componentLibrary'
 
 const Canvas: React.FC = () => {
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 })
@@ -13,6 +14,7 @@ const Canvas: React.FC = () => {
   const stageRef = useRef<Konva.Stage>(null)
   const addComponent = useSchematicStore((state) => state.addComponent)
   const components = useSchematicStore((state) => state.components)
+  const nets = useSchematicStore((state) => state.nets)
   const selectComponent = useSchematicStore((state) => state.selectComponent)
   const hoveredComponentId = useSchematicStore((state) => state.hoveredComponentId)
   const wiringState = useSchematicStore((state) => state.wiringState)
@@ -104,6 +106,27 @@ const Canvas: React.FC = () => {
     updateWire({ x: stageX, y: stageY })
   }
 
+  // Helper function to get absolute pin position
+  const getPinPosition = (componentId: string, pinId: string): { x: number; y: number } | null => {
+    // Find the component
+    const component = components.find(c => c.id === componentId)
+    if (!component) return null
+
+    // Find the component definition to get pin data
+    const componentDef = componentLibrary.find(def => def.id === component.libraryId)
+    if (!componentDef) return null
+
+    // Find the specific pin
+    const pin = componentDef.pins.find(p => p.id === pinId)
+    if (!pin) return null
+
+    // Calculate absolute position
+    return {
+      x: component.position.x + pin.position.x,
+      y: component.position.y + pin.position.y
+    }
+  }
+
   // Handle drag over to allow drops
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -181,6 +204,29 @@ const Canvas: React.FC = () => {
           {components.map((component) => (
             <SchematicComponent key={component.id} component={component} />
           ))}
+
+          {/* Render permanent wires */}
+          {nets.map((net) => {
+            // Only render nets with exactly 2 connections (point-to-point wires)
+            if (net.connections.length !== 2) return null
+
+            const startPos = getPinPosition(net.connections[0].componentId, net.connections[0].pinId)
+            const endPos = getPinPosition(net.connections[1].componentId, net.connections[1].pinId)
+
+            // Only render if both positions are valid
+            if (!startPos || !endPos) return null
+
+            return (
+              <Line
+                key={net.id}
+                points={[startPos.x, startPos.y, endPos.x, endPos.y]}
+                stroke="#0066cc"
+                strokeWidth={2}
+                lineCap="round"
+                listening={false} // Don't interfere with mouse events
+              />
+            )
+          })}
 
           {/* Render rubber band wire when in wiring mode */}
           {wiringState.active && wiringState.startPos && wiringState.currentPos && (

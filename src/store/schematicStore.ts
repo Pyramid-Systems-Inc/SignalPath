@@ -15,10 +15,14 @@ export interface Component {
   properties: ComponentProperties
 }
 
+export interface NetConnection {
+  componentId: string
+  pinId: string
+}
+
 export interface Net {
   id: string
-  componentIds: string[]
-  points: { x: number; y: number }[]
+  connections: NetConnection[]
 }
 
 export interface WiringState {
@@ -47,7 +51,8 @@ export interface SchematicState {
   updateNet: (id: string, updates: Partial<Net>) => void
   startWire: (componentId: string, pinId: string, startPos: { x: number; y: number }) => void
   updateWire: (newPos: { x: number; y: number }) => void
-  endWire: () => void
+  endWire: (endPin: { componentId: string; pinId: string }) => void
+  cancelWire: () => void
 }
 
 // Zustand store
@@ -175,7 +180,34 @@ export const useSchematicStore = create<SchematicState>((set) => ({
       }
     })),
 
-  endWire: () =>
+  endWire: (endPin) =>
+    set((state) => {
+      // Only create net if we're in active wiring mode
+      if (!state.wiringState.active || !state.wiringState.startPin) {
+        return state;
+      }
+
+      // Create new net with unique ID
+      const newNet: Net = {
+        id: nanoid(),
+        connections: [
+          state.wiringState.startPin,
+          endPin
+        ]
+      };
+
+      return {
+        nets: [...state.nets, newNet],
+        wiringState: {
+          active: false,
+          startPin: null,
+          startPos: null,
+          currentPos: null
+        }
+      };
+    }),
+
+  cancelWire: () =>
     set(() => ({
       wiringState: {
         active: false,

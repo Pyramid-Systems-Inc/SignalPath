@@ -16,6 +16,8 @@ interface OpAmpSymbolProps {
 const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ id, libraryId, componentPosition, x, y, rotation }) => {
   const selectComponent = useSchematicStore((state) => state.selectComponent);
   const startWire = useSchematicStore((state) => state.startWire);
+  const endWire = useSchematicStore((state) => state.endWire);
+  const wiringState = useSchematicStore((state) => state.wiringState);
 
   // Get component definition to access pins
   const componentDef = componentLibrary.find(comp => comp.id === libraryId);
@@ -39,8 +41,15 @@ const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ id, libraryId, componentPosit
       y: componentPosition.y + pin.position.y
     };
 
-    console.log(`Pin clicked: ${pinId} on component ${id} at position:`, absolutePosition);
-    startWire(id, pinId, absolutePosition);
+    if (wiringState.active) {
+      // We're in wiring mode, so this click should end the wire
+      console.log(`Ending wire at pin: ${pinId} on component ${id}`);
+      endWire({ componentId: id, pinId });
+    } else {
+      // Start a new wire
+      console.log(`Starting wire from pin: ${pinId} on component ${id} at position:`, absolutePosition);
+      startWire(id, pinId, absolutePosition);
+    }
   };
 
   return (
