@@ -187,6 +187,20 @@ export const useSchematicStore = create<SchematicState>((set) => ({
         return state;
       }
 
+      // Prevent self-connections (same component)
+      if (state.wiringState.startPin.componentId === endPin.componentId) {
+        console.warn('Cannot connect pins on the same component');
+        // Reset wiring state without creating a net
+        return {
+          wiringState: {
+            active: false,
+            startPin: null,
+            startPos: null,
+            currentPos: null
+          }
+        };
+      }
+
       // Create new net with unique ID
       const newNet: Net = {
         id: nanoid(),

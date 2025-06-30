@@ -26,6 +26,10 @@ const SchematicComponent: React.FC<SchematicComponentProps> = ({ component }) =>
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
     // Prevent event propagation during drag to stop canvas from dragging
     e.cancelBubble = true;
+
+    // Update component position in real-time during drag for wire updates
+    const position = e.target.position();
+    moveComponent(id, { x: position.x, y: position.y });
   };
 
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {

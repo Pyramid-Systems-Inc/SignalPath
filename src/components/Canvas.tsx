@@ -19,6 +19,7 @@ const Canvas: React.FC = () => {
   const hoveredComponentId = useSchematicStore((state) => state.hoveredComponentId)
   const wiringState = useSchematicStore((state) => state.wiringState)
   const updateWire = useSchematicStore((state) => state.updateWire)
+  const cancelWire = useSchematicStore((state) => state.cancelWire)
 
   // Handle container resizing
   useEffect(() => {
@@ -38,6 +39,19 @@ const Canvas: React.FC = () => {
 
     return () => resizeObserver.disconnect()
   }, [])
+
+  // Handle keyboard events for wire cancellation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && wiringState.active) {
+        console.log('ESC pressed - cancelling wire')
+        cancelWire()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [wiringState.active, cancelWire])
 
   // Handle wheel zoom
   const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
@@ -106,6 +120,16 @@ const Canvas: React.FC = () => {
     updateWire({ x: stageX, y: stageY })
   }
 
+  // Handle right-click for wire cancellation
+  const handleContextMenu = (e: Konva.KonvaEventObject<PointerEvent>) => {
+    e.evt.preventDefault() // Prevent browser context menu
+
+    if (wiringState.active) {
+      console.log('Right-click - cancelling wire')
+      cancelWire()
+    }
+  }
+
   // Helper function to get absolute pin position
   const getPinPosition = (componentId: string, pinId: string): { x: number; y: number } | null => {
     // Find the component
@@ -125,6 +149,28 @@ const Canvas: React.FC = () => {
       x: component.position.x + pin.position.x,
       y: component.position.y + pin.position.y
     }
+  }
+
+  // Helper function to calculate routed wire points (right-angle routing)
+  const getRoutedWirePoints = (startPos: { x: number; y: number }, endPos: { x: number; y: number }): number[] => {
+    const dx = endPos.x - startPos.x
+    const dy = endPos.y - startPos.y
+
+    // If the wire is mostly horizontal or vertical, use direct routing
+    if (Math.abs(dx) < 20 || Math.abs(dy) < 20) {
+      return [startPos.x, startPos.y, endPos.x, endPos.y]
+    }
+
+    // Use right-angle routing with a midpoint
+    // Route horizontally first, then vertically
+    const midX = startPos.x + dx * 0.5
+
+    return [
+      startPos.x, startPos.y,  // Start point
+      midX, startPos.y,        // Horizontal segment
+      midX, endPos.y,          // Vertical segment
+      endPos.x, endPos.y       // End point
+    ]
   }
 
   // Handle drag over to allow drops
@@ -192,6 +238,7 @@ const Canvas: React.FC = () => {
         onClick={handleStageClick}
         onTap={handleStageClick}
         onMouseMove={handleMouseMove}
+        onContextMenu={handleContextMenu}
       >
         <Layer>
           <Grid
@@ -216,13 +263,17 @@ const Canvas: React.FC = () => {
             // Only render if both positions are valid
             if (!startPos || !endPos) return null
 
+            // Get routed wire points for professional appearance
+            const routedPoints = getRoutedWirePoints(startPos, endPos)
+
             return (
               <Line
                 key={net.id}
-                points={[startPos.x, startPos.y, endPos.x, endPos.y]}
+                points={routedPoints}
                 stroke="#0066cc"
                 strokeWidth={2}
                 lineCap="round"
+                lineJoin="round"
                 listening={false} // Don't interfere with mouse events
               />
             )
