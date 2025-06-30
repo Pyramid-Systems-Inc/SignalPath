@@ -53,6 +53,7 @@ export interface SchematicState {
   updateWire: (newPos: { x: number; y: number }) => void
   endWire: (endPin: { componentId: string; pinId: string }) => void
   cancelWire: () => void
+  isPinConnected: (componentId: string, pinId: string) => boolean
 }
 
 // Zustand store
@@ -201,6 +202,47 @@ export const useSchematicStore = create<SchematicState>((set) => ({
         };
       }
 
+      // Check if either pin is already connected (one wire per pin validation)
+      const isStartPinConnected = state.nets.some(net =>
+        net.connections.some(conn =>
+          conn.componentId === state.wiringState.startPin!.componentId &&
+          conn.pinId === state.wiringState.startPin!.pinId
+        )
+      );
+
+      const isEndPinConnected = state.nets.some(net =>
+        net.connections.some(conn =>
+          conn.componentId === endPin.componentId &&
+          conn.pinId === endPin.pinId
+        )
+      );
+
+      if (isStartPinConnected) {
+        console.warn(`Start pin ${state.wiringState.startPin.pinId} on component ${state.wiringState.startPin.componentId} is already connected`);
+        // Reset wiring state without creating a net
+        return {
+          wiringState: {
+            active: false,
+            startPin: null,
+            startPos: null,
+            currentPos: null
+          }
+        };
+      }
+
+      if (isEndPinConnected) {
+        console.warn(`End pin ${endPin.pinId} on component ${endPin.componentId} is already connected`);
+        // Reset wiring state without creating a net
+        return {
+          wiringState: {
+            active: false,
+            startPin: null,
+            startPos: null,
+            currentPos: null
+          }
+        };
+      }
+
       // Create new net with unique ID
       const newNet: Net = {
         id: nanoid(),
@@ -230,4 +272,13 @@ export const useSchematicStore = create<SchematicState>((set) => ({
         currentPos: null
       }
     })),
+
+  isPinConnected: (componentId, pinId) => {
+    const state = useSchematicStore.getState()
+    return state.nets.some(net =>
+      net.connections.some(conn =>
+        conn.componentId === componentId && conn.pinId === pinId
+      )
+    )
+  },
 }))

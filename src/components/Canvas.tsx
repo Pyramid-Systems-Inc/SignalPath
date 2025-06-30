@@ -130,6 +130,20 @@ const Canvas: React.FC = () => {
     }
   }
 
+  // Helper function to get component bounds
+  const getComponentBounds = (libraryId: string) => {
+    switch (libraryId) {
+      case 'RESISTOR_GENERIC':
+        return { width: 44, height: 16, offsetX: -22, offsetY: -8 };
+      case 'OPAMP_LM386':
+        return { width: 64, height: 34, offsetX: -32, offsetY: -17 };
+      case 'ELECTRET_MICROPHONE':
+        return { width: 28, height: 48, offsetX: -14, offsetY: -24 };
+      default:
+        return { width: 44, height: 16, offsetX: -22, offsetY: -8 };
+    }
+  }
+
   // Helper function to get absolute pin position
   const getPinPosition = (componentId: string, pinId: string): { x: number; y: number } | null => {
     // Find the component
@@ -151,25 +165,148 @@ const Canvas: React.FC = () => {
     }
   }
 
-  // Helper function to calculate routed wire points (right-angle routing)
-  const getRoutedWirePoints = (startPos: { x: number; y: number }, endPos: { x: number; y: number }): number[] => {
+  // Helper function to get wire connection point with edge offset
+  const getWireConnectionPoint = (componentId: string, pinId: string): { x: number; y: number } | null => {
+    const pinPos = getPinPosition(componentId, pinId)
+    if (!pinPos) return null
+
+    const component = components.find(c => c.id === componentId)
+    if (!component) return null
+
+    const bounds = getComponentBounds(component.libraryId)
+    const EDGE_OFFSET = 8 // 8px offset from component edge
+
+    // Calculate component edges
+    const componentLeft = component.position.x + bounds.offsetX
+    const componentRight = component.position.x + bounds.offsetX + bounds.width
+    const componentTop = component.position.y + bounds.offsetY
+    const componentBottom = component.position.y + bounds.offsetY + bounds.height
+
+    // Determine which edge the pin is closest to and apply offset
+    const pinRelativeX = pinPos.x - component.position.x
+    const pinRelativeY = pinPos.y - component.position.y
+
+    let connectionPoint = { ...pinPos }
+
+    // Apply edge offset based on pin position relative to component center
+    if (pinRelativeX < bounds.offsetX + bounds.width * 0.25) {
+      // Pin is on the left side
+      connectionPoint.x = componentLeft - EDGE_OFFSET
+    } else if (pinRelativeX > bounds.offsetX + bounds.width * 0.75) {
+      // Pin is on the right side
+      connectionPoint.x = componentRight + EDGE_OFFSET
+    }
+
+    if (pinRelativeY < bounds.offsetY + bounds.height * 0.25) {
+      // Pin is on the top side
+      connectionPoint.y = componentTop - EDGE_OFFSET
+    } else if (pinRelativeY > bounds.offsetY + bounds.height * 0.75) {
+      // Pin is on the bottom side
+      connectionPoint.y = componentBottom + EDGE_OFFSET
+    }
+
+    return connectionPoint
+  }
+
+  // Helper function to calculate routed wire points with component avoidance
+  const getRoutedWirePoints = (startComponentId: string, startPinId: string, endComponentId: string, endPinId: string): number[] => {
+    // Get connection points with edge offsets
+    const startPos = getWireConnectionPoint(startComponentId, startPinId)
+    const endPos = getWireConnectionPoint(endComponentId, endPinId)
+
+    if (!startPos || !endPos) {
+      // Fallback to pin positions if connection points fail
+      const fallbackStart = getPinPosition(startComponentId, startPinId)
+      const fallbackEnd = getPinPosition(endComponentId, endPinId)
+      if (!fallbackStart || !fallbackEnd) return []
+      return [fallbackStart.x, fallbackStart.y, fallbackEnd.x, fallbackEnd.y]
+    }
+
     const dx = endPos.x - startPos.x
     const dy = endPos.y - startPos.y
 
-    // If the wire is mostly horizontal or vertical, use direct routing
-    if (Math.abs(dx) < 20 || Math.abs(dy) < 20) {
+    // If the wire is short, use direct routing
+    if (Math.abs(dx) < 30 && Math.abs(dy) < 30) {
       return [startPos.x, startPos.y, endPos.x, endPos.y]
     }
 
-    // Use right-angle routing with a midpoint
-    // Route horizontally first, then vertically
-    const midX = startPos.x + dx * 0.5
+    // Use intelligent right-angle routing with component avoidance
+    const CLEARANCE = 15 // Additional clearance around components
 
+    // Get component bounds for avoidance
+    const startComponent = components.find(c => c.id === startComponentId)
+    const endComponent = components.find(c => c.id === endComponentId)
+
+    if (!startComponent || !endComponent) {
+      // Fallback to simple routing
+      const midX = startPos.x + dx * 0.5
+      return [
+        startPos.x, startPos.y,
+        midX, startPos.y,
+        midX, endPos.y,
+        endPos.x, endPos.y
+      ]
+    }
+
+    const startBounds = getComponentBounds(startComponent.libraryId)
+    const endBounds = getComponentBounds(endComponent.libraryId)
+
+    // Calculate component boundaries with clearance
+    const startLeft = startComponent.position.x + startBounds.offsetX - CLEARANCE
+    const startRight = startComponent.position.x + startBounds.offsetX + startBounds.width + CLEARANCE
+    const startTop = startComponent.position.y + startBounds.offsetY - CLEARANCE
+    const startBottom = startComponent.position.y + startBounds.offsetY + startBounds.height + CLEARANCE
+
+    const endLeft = endComponent.position.x + endBounds.offsetX - CLEARANCE
+    const endRight = endComponent.position.x + endBounds.offsetX + endBounds.width + CLEARANCE
+    const endTop = endComponent.position.y + endBounds.offsetY - CLEARANCE
+    const endBottom = endComponent.position.y + endBounds.offsetY + endBounds.height + CLEARANCE
+
+    // Determine routing strategy based on component positions
+    let midX: number
+    let midY: number
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Primarily horizontal routing
+      if (startPos.x < endPos.x) {
+        // Left to right
+        midX = Math.max(startRight, endRight) + CLEARANCE
+      } else {
+        // Right to left
+        midX = Math.min(startLeft, endLeft) - CLEARANCE
+      }
+
+      // Route around components vertically if needed
+      if (startPos.y < endPos.y) {
+        midY = Math.max(startBottom, endBottom) + CLEARANCE
+      } else {
+        midY = Math.min(startTop, endTop) - CLEARANCE
+      }
+    } else {
+      // Primarily vertical routing
+      if (startPos.y < endPos.y) {
+        // Top to bottom
+        midY = Math.max(startBottom, endBottom) + CLEARANCE
+      } else {
+        // Bottom to top
+        midY = Math.min(startTop, endTop) - CLEARANCE
+      }
+
+      // Route around components horizontally if needed
+      if (startPos.x < endPos.x) {
+        midX = Math.max(startRight, endRight) + CLEARANCE
+      } else {
+        midX = Math.min(startLeft, endLeft) - CLEARANCE
+      }
+    }
+
+    // Create the routed path
     return [
-      startPos.x, startPos.y,  // Start point
-      midX, startPos.y,        // Horizontal segment
-      midX, endPos.y,          // Vertical segment
-      endPos.x, endPos.y       // End point
+      startPos.x, startPos.y,    // Start point
+      startPos.x, midY,          // Vertical segment from start
+      midX, midY,                // Horizontal segment
+      midX, endPos.y,            // Vertical segment to end
+      endPos.x, endPos.y         // End point
     ]
   }
 
@@ -257,14 +394,16 @@ const Canvas: React.FC = () => {
             // Only render nets with exactly 2 connections (point-to-point wires)
             if (net.connections.length !== 2) return null
 
-            const startPos = getPinPosition(net.connections[0].componentId, net.connections[0].pinId)
-            const endPos = getPinPosition(net.connections[1].componentId, net.connections[1].pinId)
+            // Get routed wire points with component avoidance
+            const routedPoints = getRoutedWirePoints(
+              net.connections[0].componentId,
+              net.connections[0].pinId,
+              net.connections[1].componentId,
+              net.connections[1].pinId
+            )
 
-            // Only render if both positions are valid
-            if (!startPos || !endPos) return null
-
-            // Get routed wire points for professional appearance
-            const routedPoints = getRoutedWirePoints(startPos, endPos)
+            // Only render if routing was successful
+            if (routedPoints.length === 0) return null
 
             return (
               <Line

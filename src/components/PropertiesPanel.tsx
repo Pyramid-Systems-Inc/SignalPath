@@ -3,7 +3,7 @@ import { useSchematicStore } from '../store/schematicStore'
 import { componentLibrary } from '../lib/componentLibrary'
 
 const PropertiesPanel: React.FC = () => {
-  const { selectedComponentId, components, updateComponentProperties, deleteComponent } = useSchematicStore()
+  const { selectedComponentId, components, nets, updateComponentProperties, deleteComponent } = useSchematicStore()
 
   // Find the selected component
   const selectedComponent = selectedComponentId
@@ -14,6 +14,54 @@ const PropertiesPanel: React.FC = () => {
   const getComponentDisplayName = (libraryId: string): string => {
     const componentDef = componentLibrary.find(comp => comp.id === libraryId)
     return componentDef ? componentDef.name : libraryId
+  }
+
+  // Get pin connection information for a component
+  const getPinConnections = (componentId: string) => {
+    if (!selectedComponent) return []
+
+    const componentDef = componentLibrary.find(comp => comp.id === selectedComponent.libraryId)
+    if (!componentDef) return []
+
+    return componentDef.pins.map(pin => {
+      // Find if this pin is connected
+      const connectedNet = nets.find(net =>
+        net.connections.some(conn =>
+          conn.componentId === componentId && conn.pinId === pin.id
+        )
+      )
+
+      if (connectedNet) {
+        // Find the other connection in this net
+        const otherConnection = connectedNet.connections.find(conn =>
+          !(conn.componentId === componentId && conn.pinId === pin.id)
+        )
+
+        if (otherConnection) {
+          const otherComponent = components.find(comp => comp.id === otherConnection.componentId)
+          const otherComponentDef = componentLibrary.find(comp => comp.id === otherComponent?.libraryId)
+          const otherPin = otherComponentDef?.pins.find(p => p.id === otherConnection.pinId)
+
+          return {
+            pin,
+            isConnected: true,
+            netId: connectedNet.id,
+            connectedTo: {
+              componentId: otherConnection.componentId,
+              componentName: otherComponent?.properties.refDes || 'Unknown',
+              pinName: otherPin?.name || otherConnection.pinId
+            }
+          }
+        }
+      }
+
+      return {
+        pin,
+        isConnected: false,
+        netId: null,
+        connectedTo: null
+      }
+    })
   }
 
   // Handle RefDes change
@@ -124,6 +172,66 @@ const PropertiesPanel: React.FC = () => {
               }}
               placeholder="Enter reference designator"
             />
+          </div>
+
+          {/* Connections Section */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              color: '#555',
+              marginBottom: '8px'
+            }}>
+              Pin Connections:
+            </label>
+            <div style={{
+              backgroundColor: '#f8f8f8',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              padding: '8px',
+              maxHeight: '200px',
+              overflowY: 'auto'
+            }}>
+              {getPinConnections(selectedComponent.id).map((pinInfo, index) => (
+                <div key={pinInfo.pin.id} style={{
+                  marginBottom: index < getPinConnections(selectedComponent.id).length - 1 ? '8px' : '0',
+                  padding: '6px',
+                  backgroundColor: pinInfo.isConnected ? '#e8f5e8' : '#fff3cd',
+                  border: `1px solid ${pinInfo.isConnected ? '#c3e6c3' : '#ffeaa7'}`,
+                  borderRadius: '3px',
+                  fontSize: '11px'
+                }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>
+                    Pin {pinInfo.pin.name} ({pinInfo.pin.id})
+                  </div>
+                  {pinInfo.isConnected ? (
+                    <div>
+                      <div style={{ color: '#28a745' }}>✓ Connected</div>
+                      <div style={{ color: '#666', fontSize: '10px' }}>
+                        To: {pinInfo.connectedTo?.componentName}.{pinInfo.connectedTo?.pinName}
+                      </div>
+                      <div style={{ color: '#666', fontSize: '10px', fontFamily: 'monospace' }}>
+                        Net: {pinInfo.netId?.substring(0, 8)}...
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#856404' }}>○ Unconnected</div>
+                  )}
+                </div>
+              ))}
+              {getPinConnections(selectedComponent.id).length === 0 && (
+                <div style={{
+                  fontSize: '11px',
+                  color: '#666',
+                  fontStyle: 'italic',
+                  textAlign: 'center',
+                  padding: '8px'
+                }}>
+                  No pins defined for this component
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Delete Button */}

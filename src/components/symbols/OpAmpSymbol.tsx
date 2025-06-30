@@ -18,6 +18,7 @@ const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ id, libraryId, componentPosit
   const startWire = useSchematicStore((state) => state.startWire);
   const endWire = useSchematicStore((state) => state.endWire);
   const wiringState = useSchematicStore((state) => state.wiringState);
+  const isPinConnected = useSchematicStore((state) => state.isPinConnected);
 
   // Get component definition to access pins
   const componentDef = componentLibrary.find(comp => comp.id === libraryId);
@@ -111,29 +112,39 @@ const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ id, libraryId, componentPosit
       />
 
       {/* Render pins */}
-      {pins.map((pin) => (
-        <Group key={pin.id}>
-          {/* Pin clickable area */}
-          <Rect
-            x={pin.position.x - 6}
-            y={pin.position.y - 6}
-            width={12}
-            height={12}
-            fill="#ff6b6b"
-            stroke="#d63031"
-            strokeWidth={1}
-            cornerRadius={2}
-            onClick={(e) => handlePinClick(e, pin.id)}
-            onTap={(e) => handlePinClick(e, pin.id)}
-            onMouseEnter={(e) => {
-              e.target.fill('#ff5252')
-              e.target.strokeWidth(2)
-            }}
-            onMouseLeave={(e) => {
-              e.target.fill('#ff6b6b')
-              e.target.strokeWidth(1)
-            }}
-          />
+      {pins.map((pin) => {
+        const isConnected = isPinConnected(id, pin.id);
+        const pinColor = isConnected ? '#4CAF50' : '#ff6b6b'; // Green for connected, red for unconnected
+        const pinStroke = isConnected ? '#388E3C' : '#d63031';
+
+        return (
+          <Group key={pin.id}>
+            {/* Pin clickable area */}
+            <Rect
+              x={pin.position.x - 6}
+              y={pin.position.y - 6}
+              width={12}
+              height={12}
+              fill={pinColor}
+              stroke={pinStroke}
+              strokeWidth={1}
+              cornerRadius={2}
+              onClick={(e) => handlePinClick(e, pin.id)}
+              onTap={(e) => handlePinClick(e, pin.id)}
+              onMouseEnter={(e) => {
+                if (isConnected) {
+                  e.target.fill('#66BB6A')
+                  e.target.strokeWidth(2)
+                } else {
+                  e.target.fill('#ff5252')
+                  e.target.strokeWidth(2)
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.target.fill(pinColor)
+                e.target.strokeWidth(1)
+              }}
+            />
 
           {/* Pin label */}
           <Text
@@ -145,8 +156,9 @@ const OpAmpSymbol: React.FC<OpAmpSymbolProps> = ({ id, libraryId, componentPosit
             fontFamily="Arial"
             align={pin.position.x < 0 ? "right" : "left"}
           />
-        </Group>
-      ))}
+          </Group>
+        );
+      })}
     </Group>
   );
 };
