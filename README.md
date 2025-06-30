@@ -137,49 +137,6 @@ SignalPath/
 └── release/             # Build output directory
 ```
 
-## 🚀 CI/CD Pipeline
-
-SignalPath features a comprehensive automated pipeline powered by GitHub Actions:
-
-### ⚡ Automated Workflows
-
-- **Continuous Integration** - Automated testing and validation on every commit
-- **Cross-Platform Builds** - Simultaneous builds for Windows, macOS, and Linux
-- **Semantic Versioning** - Automatic version management using conventional commits
-- **Release Automation** - GitHub releases with downloadable installers
-- **Changelog Generation** - Automated documentation of changes
-
-### 📦 Release Process
-
-The application follows [semantic versioning](https://semver.org/) with automated releases:
-
-```bash
-# Bug fixes (patch: 1.1.3 → 1.1.4)
-git commit -m "fix: resolve canvas rendering issue"
-
-# New features (minor: 1.1.4 → 1.2.0)  
-git commit -m "feat: add component templates"
-
-# Breaking changes (major: 1.2.0 → 2.0.0)
-git commit -m "feat: redesign component API
-BREAKING CHANGE: Component interface changed"
-```
-
-Releases are automatically created when commits are pushed to the main branch. Each release includes:
-
-- Cross-platform installers
-- Automated changelog
-- Release notes
-- GitHub release with assets
-
-### 📚 Documentation
-
-Comprehensive documentation is available in the [`docs/`](docs/) directory:
-
-- **[CI/CD Setup](docs/CICD_SETUP.md)** - Complete pipeline documentation
-- **[GitHub Setup](docs/GITHUB_SETUP.md)** - Repository configuration guide
-- **[CI/CD Overview](docs/README_CICD.md)** - Pipeline capabilities and features
-
 ## 🏛️ Architecture
 
 ### Technology Stack
@@ -211,17 +168,6 @@ We welcome contributions to SignalPath! Here's how to get started:
 4. **Push** to your branch: `git push origin feature/amazing-feature`
 5. **Open** a Pull Request
 
-### Commit Convention
-
-This project uses [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` New features
-- `fix:` Bug fixes  
-- `docs:` Documentation changes
-- `style:` Code style changes
-- `refactor:` Code refactoring
-- `test:` Test additions or modifications
-- `chore:` Build process or auxiliary tool changes
 
 ### Code Quality
 
