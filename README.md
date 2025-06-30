@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![SignalPath Logo](build/icon.png)
+![SignalPath Logo](build/icon.svg)
 
 **A professional intercom system designer and schematic editor for signal path visualization**
 
