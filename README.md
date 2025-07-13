@@ -21,24 +21,35 @@ SignalPath Intercom Designer is a modern, cross-platform desktop application bui
 
 ### 🎯 Core Capabilities
 
+- **Professional Wiring System** - Complete wire drawing workflow with click-to-start, drag-to-route, click-to-finish functionality
+- **Advanced Wire Routing** - Intelligent Manhattan routing with component boundary avoidance and 15px clearance
+- **Pin Connection Management** - Visual pin indicators with click handlers and one-wire-per-pin validation
+- **Real-time Connection Status** - Live properties panel showing pin connections, net IDs, and connected components
+- **Rubber Band Wire Feedback** - Real-time visual wire preview following cursor during drawing
+- **Component Avoidance Routing** - Sophisticated algorithms that route wires around component boundaries
 - **Interactive Component Palette** - Comprehensive library of intercom system components with drag-and-drop functionality
 - **Visual Canvas Editor** - Zoomable/pannable schematic design canvas with real-time feedback and component placement
 - **Complete Component Interaction** - Professional selection, drag-to-move, properties editing, and deletion workflows
-- **Component Lifecycle Management** - Full Place → Select → Move → Edit → Delete functionality with visual feedback
-- **Real-time Properties Editing** - Dynamic component properties panel with form-based editing and immediate updates
+- **Component Lifecycle Management** - Full Place → Select → Move → Edit → Delete → Wire functionality with visual feedback
+- **Enhanced Properties Panel** - Dynamic component and connection information with form-based editing and real-time updates
 - **Professional Selection System** - Click-based component selection with visual highlighting and state management
 - **Grid-Snapped Movement** - Smooth drag-to-move functionality with grid alignment and precise positioning
 - **Multiple Deletion Methods** - Keyboard shortcuts (Delete/Backspace) and visual delete buttons for component removal
-- **Schematic Symbol Rendering** - Professional react-konva powered symbols for resistors, op-amps, and microphones
-- **State Management** - Real-time component tracking and persistent schematic state with Zustand
-- **Interactive Design Surface** - Pan, zoom, and grid functionality for precise component positioning
+- **Schematic Symbol Rendering** - Professional react-konva powered symbols with clickable pins for wire connections
+- **Net Management System** - Complete electrical connectivity tracking with unique net IDs and connection arrays
+- **State Management** - Real-time component and wiring state tracking with persistent schematic data using Zustand
+- **Interactive Design Surface** - Pan, zoom, and grid functionality for precise component positioning and wire routing
 
 ### 🛠️ Technical Highlights
 
 - **Modern Architecture** - Built with Electron, React 19, and TypeScript
-- **Interactive Canvas** - React-Konva powered zoomable/pannable design surface
-- **Component Library** - TypeScript-based component definitions with SVG icons
-- **State Management** - Zustand for efficient application state handling
+- **Advanced Wiring Engine** - Professional wire routing with component avoidance and Manhattan routing algorithms
+- **Interactive Canvas** - React-Konva powered zoomable/pannable design surface with real-time wire rendering
+- **Component Pin System** - TypeScript-based component definitions with clickable pin interfaces and position mapping
+- **Net Management** - Complete electrical connectivity tracking with validation and real-time connection status
+- **State Management** - Zustand for efficient application and wiring state handling with TypeScript integration
+- **Professional Wire Routing** - Intelligent path planning with component boundary detection and clearance management
+- **Real-time Validation** - One-wire-per-pin enforcement with visual feedback and connection status tracking
 - **Cross-Platform** - Native desktop application for Windows, macOS, and Linux
 - **Professional Packaging** - Code-signed installers with custom branding
 - **Automated Updates** - Semantic versioning with automated release pipeline
@@ -123,14 +134,23 @@ npm run electron:dist # Create distribution packages
 SignalPath/
 ├── src/                    # React application source
 │   ├── components/         # React components
-│   │   ├── Canvas.tsx     # Main design canvas
-│   │   ├── ComponentPalette.tsx # Component library
-│   │   └── PropertiesPanel.tsx  # Configuration panel
+│   │   ├── Canvas.tsx     # Main design canvas with wire rendering
+│   │   ├── ComponentPalette.tsx # Component library with drag-and-drop
+│   │   ├── PropertiesPanel.tsx  # Properties and connection status panel
+│   │   └── symbols/       # Component symbol definitions
+│   │       ├── ResistorSymbol.tsx    # Resistor schematic symbol with pins
+│   │       ├── OpAmpSymbol.tsx       # Op-amp symbol with pin handlers
+│   │       └── MicrophoneSymbol.tsx  # Microphone symbol with connections
+│   ├── lib/               # Library definitions
+│   │   └── componentLibrary.ts # Component and pin definitions
 │   ├── store/             # Zustand state management
+│   │   └── schematicStore.ts # Application state with wiring support
 │   └── App.tsx            # Main application component
 ├── electron/              # Electron main process
 │   ├── main.ts           # Main process entry point
 │   └── preload.ts        # Preload scripts for security
+├── public/               # Static assets
+│   └── icons/           # Component SVG icons
 ├── build/                # Application assets and icons
 ├── docs/                 # Comprehensive documentation
 ├── .github/workflows/    # CI/CD automation
@@ -143,15 +163,21 @@ SignalPath/
 
 - **Frontend Framework**: React 19 with TypeScript
 - **Desktop Runtime**: Electron 36
-- **State Management**: Zustand
-- **Build System**: Electron-Vite for fast development
-- **Package Builder**: Electron-Builder for cross-platform distribution
-- **Development Tools**: ESLint, TypeScript, Vite
+- **Canvas Rendering**: React-Konva 19 with Konva 9.3 for high-performance graphics
+- **State Management**: Zustand 5.0 for application and wiring state
+- **Wire Routing**: Custom algorithms with component avoidance and Manhattan routing
+- **Build System**: Electron-Vite 3.1 for fast development and hot reload
+- **Package Builder**: Electron-Builder 26 for cross-platform distribution
+- **Development Tools**: ESLint 9, TypeScript 5.8, Vite 6.3
 
 ### Key Design Decisions
 
-- **TypeScript First** - Strong typing throughout the application
-- **Component Architecture** - Modular, reusable React components
+- **TypeScript First** - Strong typing throughout the application including wiring interfaces
+- **Component Architecture** - Modular, reusable React components with pin-based interaction
+- **Professional Wire Routing** - Manhattan routing algorithms with component avoidance
+- **Real-time State Management** - Zustand for efficient wiring and component state handling
+- **Canvas-Based Rendering** - React-Konva for high-performance schematic visualization
+- **Pin-Centric Design** - Component pins as first-class citizens for electrical connections
 - **Electron Security** - Context isolation and preload scripts
 - **Modern Tooling** - Fast development with Vite and hot reload
 - **Cross-Platform** - Native look and feel on each operating system
@@ -197,26 +223,33 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ![Current Version](https://img.shields.io/github/v/release/OmarAglan/SignalPath?style=for-the-badge)
 
-**Status**: ✅ **Stage 2 Complete - Professional Component Interaction System**
+**Status**: ✅ **Stage 3 Complete - Professional Wiring and Net Creation System**
 
-SignalPath has achieved another major milestone with Stage 2 completion. The project now features:
+SignalPath has achieved its most sophisticated milestone with Stage 3 completion. The project now features a complete professional-grade wiring system that rivals commercial EDA tools:
 
-- ✅ **Complete Component Interaction System** - Professional Place → Select → Move → Edit → Delete workflow
+- ✅ **Professional Wiring System** - Complete click-to-start, drag-to-route, click-to-finish wire drawing workflow
+- ✅ **Advanced Wire Routing** - Intelligent Manhattan routing with component boundary avoidance and clearance
+- ✅ **Pin Connection Validation** - One-wire-per-pin enforcement with visual feedback and connection status
+- ✅ **Real-time Connection Status** - Live properties panel showing pin connections, net IDs, and connected components
+- ✅ **Component Pin System** - Visual pin indicators with click handlers for wire connections
+- ✅ **Net Management** - Complete electrical connectivity tracking with unique net IDs and connection arrays
+- ✅ **Rubber Band Wires** - Real-time visual feedback during wire drawing with mouse tracking
+- ✅ **Component Avoidance** - Sophisticated routing algorithms that navigate around component boundaries
+- ✅ **Complete Component Interaction** - Professional Place → Select → Move → Edit → Delete → Wire workflow
 - ✅ **Visual Selection System** - Click-based component selection with highlighting and state management
 - ✅ **Drag-to-Move Functionality** - Smooth component repositioning with grid snapping and real-time updates
-- ✅ **Properties Panel Integration** - Real-time component property editing with form synchronization
+- ✅ **Properties Panel Integration** - Real-time component and connection information with form synchronization
 - ✅ **Multiple Deletion Methods** - Keyboard shortcuts (Delete/Backspace) and visual delete buttons
-- ✅ **Enhanced UX Features** - Hover effects, cursor management, auto-selection, and visual feedback
-- ✅ **Functional Schematic Editor** - Full component placement system operational
+- ✅ **Enhanced UX Features** - Hover effects, cursor management, auto-selection, and comprehensive visual feedback
 - ✅ **Interactive Canvas** - Professional pan/zoom/grid functionality with react-konva
-- ✅ **Component Library** - Drag-and-drop palette with intercom-specific components
-- ✅ **Symbol Rendering** - Professional schematic symbols for resistors, op-amps, and microphones
-- ✅ **State Management** - Complete Zustand integration with TypeScript support
+- ✅ **Component Library** - Drag-and-drop palette with intercom-specific components and pin definitions
+- ✅ **Symbol Rendering** - Professional schematic symbols with clickable pins for wire connections
+- ✅ **State Management** - Complete Zustand integration with TypeScript support and wiring state
 - ✅ **Cross-platform Desktop Application** - Modern Electron + React architecture
 - ✅ **Professional CI/CD Pipeline** - Automated releases and comprehensive documentation
-- ✅ **Ready for Stage 3** - Foundation prepared for wiring and net creation
+- ✅ **Ready for Stage 4** - Foundation prepared for design analysis and export capabilities
 
-**Current Capabilities**: Users can now create professional intercom schematic layouts with complete component interaction - placing, selecting, moving, editing properties, and deleting components through an intuitive interface with immediate visual feedback.
+**Current Capabilities**: Users can now create complete professional intercom schematics with full electrical connectivity - placing components, drawing wires between pins, managing connections, and editing properties through an intuitive interface with advanced wire routing and real-time connection validation.
 
 ---
 
