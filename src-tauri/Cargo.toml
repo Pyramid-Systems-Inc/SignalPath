@@ -15,11 +15,13 @@ name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
+# Build dependencies do not need feature flags for the dialog
 tauri-build = { version = "2.3.0", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.6.2", features = [] }
+# The "dialog-all" feature goes on the main tauri dependency
+tauri = { version = "2.6.2", features = ["dialog-all"] }
 tauri-plugin-log = "2"
