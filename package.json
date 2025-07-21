@@ -10,15 +10,18 @@
   "type": "module",
   "main": "out/main/index.js",
   "scripts": {
-    "dev": "electron-vite dev",
-    "build": "electron-vite build",
-    "preview": "electron-vite preview",
+    "dev:electron": "electron-vite dev",
+  "dev:vite": "vite",
+  "build": "electron-vite build",
+  "preview": "electron-vite preview",
+  "tauri:dev": "tauri dev",
     "lint": "eslint .",
     "build:package": "npm run build && electron-builder",
     "electron:pack": "electron-builder",
     "electron:dist": "electron-vite build && electron-builder"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.7.0",
     "konva": "^9.3.20",
     "nanoid": "^5.1.5",
     "react": "^19.1.0",
@@ -28,6 +31,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@tauri-apps/cli": "^2.6.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
@@ -65,6 +69,6 @@
         }
       ],
       "icon": "build/icon.ico"
-    }  
+    }
   }
 }
