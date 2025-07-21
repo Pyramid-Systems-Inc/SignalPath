@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import './App.css'
 import Canvas from './components/Canvas'
 import ComponentPalette from './components/ComponentPalette'
 import PropertiesPanel from './components/PropertiesPanel'
+import Toolbar from './components/Toolbar';
 import { useSchematicStore } from './store/schematicStore'
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
       width: '100vw',
       overflow: 'hidden'
     }}>
+      <Toolbar />
       {/* Canvas layer - behind everything */}
       <Canvas />
 

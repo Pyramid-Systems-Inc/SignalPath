@@ -54,6 +54,7 @@ export interface SchematicState {
   endWire: (endPin: { componentId: string; pinId: string }) => void
   cancelWire: () => void
   isPinConnected: (componentId: string, pinId: string) => boolean
+  loadProject: (jsonContent: string) => void;
 }
 
 // Zustand store
@@ -100,7 +101,25 @@ export const useSchematicStore = create<SchematicState>((set) => ({
 
     return newComponentId
   },
-  
+  loadProject: (jsonContent) => {
+    try {
+        const loadedState = JSON.parse(jsonContent);
+        if (loadedState.components && loadedState.nets) {
+            set({
+                components: loadedState.components,
+                nets: loadedState.nets,
+                // Reset other transient state
+                selectedComponentId: null,
+                hoveredComponentId: null,
+                wiringState: { active: false, startPin: null, startPos: null, currentPos: null },
+            });
+        } else {
+            console.error("Invalid project file format.");
+        }
+    } catch (error) {
+        console.error("Failed to parse project file:", error);
+    }
+},
   removeComponent: (id) =>
     set((state) => ({
       components: state.components.filter((component) => component.id !== id),
