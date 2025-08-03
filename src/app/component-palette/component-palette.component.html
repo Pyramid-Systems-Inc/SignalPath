@@ -3,7 +3,7 @@
   <div class="category" *ngFor="let category of categories">
     <h3>{{ category }}</h3>
     <ul class="component-list">
-      <li *ngFor="let component of getComponentsForCategory(category)" class="component-item" draggable="true">
+      <li *ngFor="let component of getComponentsForCategory(category)" class="component-item" draggable="true" (dragstart)="onDragStart($event, component)">
         <img [src]="component.iconUrl" [alt]="component.name" class="component-icon" />
         <span class="component-name">{{ component.name }}</span>
       </li>

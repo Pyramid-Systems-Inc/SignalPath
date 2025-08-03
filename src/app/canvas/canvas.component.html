@@ -1,1 +1,31 @@
-<p>canvas works!</p>
+<div class="canvas-container">
+  <k-stage [config]="stageConfig | async">
+    <k-layer>
+      <!-- Placeholder for a grid in the future -->
+      <k-rect [config]="{x: 0, y: 0, width: 5000, height: 5000, fill: '#1e1e1e'}"></k-rect>
+      
+      <!-- Render each component -->
+      <k-group *ngFor="let component of components$ | async" [config]="getComponentConfig(component)">
+        
+        <!-- Simple placeholder symbol -->
+        <k-rect [config]="{
+          width: 80,
+          height: 40,
+          fill: '#007acc',
+          stroke: '#66b2ff',
+          strokeWidth: 2,
+          cornerRadius: 4
+        }"></k-rect>
+        <k-text [config]="{
+          text: component.libraryId,
+          fontSize: 10,
+          fill: 'white',
+          padding: 5,
+          width: 80,
+          align: 'center'
+        }"></k-text>
+
+      </k-group>
+    </k-layer>
+  </k-stage>
+</div>

@@ -26,4 +26,16 @@ export class ComponentPaletteComponent {
   getComponentsForCategory(category: string): ComponentDef[] {
     return this.getGroupedLibrary()[category];
   }
+  
+  onDragStart(event: DragEvent, component: ComponentDef) {
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.setData('text/plain', component.id);
+      
+      // Optional: For custom drag image, but browsers are inconsistent
+      // const dragImage = new Image();
+      // dragImage.src = component.iconUrl;
+      // event.dataTransfer.setDragImage(dragImage, 16, 16);
+    }
+  }
 }
