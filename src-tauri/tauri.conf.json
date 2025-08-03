@@ -4,12 +4,13 @@
   "version": "0.1.0",
   "identifier": "com.signalpath.app",
   "build": {
-    "beforeDevCommand": "npm run start",
+    "beforeDevCommand": "dotnet watch run --project src/Signalpath.csproj",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist/signalpath/browser"
+    "beforeBuildCommand": "dotnet publish -c release src/Signalpath.csproj -o dist",
+    "frontendDist": "../dist/wwwroot"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "signalpath",
