@@ -309,25 +309,101 @@ class CanvasInterop {
         
         const isSelected = component.id === this.selectedComponentId;
         
-        // Draw component body
-        this.ctx.fillStyle = isSelected ? '#4CAF50' : '#2196F3';
+        // Draw component shadow for depth
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.shadowBlur = 4 / this.zoomLevel;
+        this.ctx.shadowOffsetX = 2 / this.zoomLevel;
+        this.ctx.shadowOffsetY = 2 / this.zoomLevel;
+        this.ctx.fillRect(component.x + 2, component.y + 2, component.width, component.height);
+        this.ctx.restore();
+        
+        // Draw component body with gradient
+        const gradient = this.ctx.createLinearGradient(
+            component.x, component.y,
+            component.x, component.y + component.height
+        );
+        
+        if (isSelected) {
+            gradient.addColorStop(0, '#66BB6A');
+            gradient.addColorStop(1, '#4CAF50');
+        } else {
+            gradient.addColorStop(0, '#42A5F5');
+            gradient.addColorStop(1, '#2196F3');
+        }
+        
+        this.ctx.fillStyle = gradient;
         this.ctx.fillRect(component.x, component.y, component.width, component.height);
         
-        // Draw component border
+        // Draw component border with rounded corners effect
         this.ctx.strokeStyle = isSelected ? '#388E3C' : '#1976D2';
         this.ctx.lineWidth = 2 / this.zoomLevel;
         this.ctx.strokeRect(component.x, component.y, component.width, component.height);
         
-        // Draw component label
+        // Draw inner border for depth
+        this.ctx.strokeStyle = isSelected ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.2)';
+        this.ctx.lineWidth = 1 / this.zoomLevel;
+        this.ctx.strokeRect(
+            component.x + 2 / this.zoomLevel,
+            component.y + 2 / this.zoomLevel,
+            component.width - 4 / this.zoomLevel,
+            component.height - 4 / this.zoomLevel
+        );
+        
+        // Draw component label with proper text scaling
         this.ctx.fillStyle = 'white';
-        this.ctx.font = `${12 / this.zoomLevel}px Arial`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(
-            component.name || component.type,
-            component.x + component.width / 2,
-            component.y + component.height / 2
-        );
+        
+        // Calculate text bounds and ensure it fits within component
+        const text = component.name || component.type;
+        const textX = component.x + component.width / 2;
+        const textY = component.y + component.height / 2;
+        
+        // Scale font size based on zoom level but ensure readability
+        const minFontSize = 8;
+        const maxFontSize = 16;
+        let fontSize = Math.max(minFontSize, Math.min(maxFontSize, 12 / this.zoomLevel));
+        this.ctx.font = `bold ${fontSize}px Arial`;
+        
+        // Add text shadow for better visibility
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.shadowBlur = 3 / this.zoomLevel;
+        this.ctx.shadowOffsetX = 1 / this.zoomLevel;
+        this.ctx.shadowOffsetY = 1 / this.zoomLevel;
+        
+        // Measure text to ensure it fits
+        const textMetrics = this.ctx.measureText(text);
+        const maxWidth = component.width - 10; // 5px padding on each side
+        
+        if (textMetrics.width > maxWidth) {
+            // Truncate text if it's too long
+            let truncatedText = text;
+            while (this.ctx.measureText(truncatedText + '...').width > maxWidth && truncatedText.length > 0) {
+                truncatedText = truncatedText.slice(0, -1);
+            }
+            this.ctx.fillText(truncatedText + '...', textX, textY);
+        } else {
+            this.ctx.fillText(text, textX, textY);
+        }
+        
+        // Reset shadow
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
+        
+        // Draw component type label (smaller text below main label)
+        if (component.type && component.type !== component.name) {
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            this.ctx.font = `${Math.max(6, fontSize - 3)}px Arial`;
+            this.ctx.fillText(
+                component.type,
+                textX,
+                textY + fontSize + 5
+            );
+        }
         
         // Draw pins
         if (component.pins) {
@@ -341,14 +417,80 @@ class CanvasInterop {
     drawPin(pin) {
         if (!this.ctx) return;
         
-        this.ctx.fillStyle = '#FF9800';
+        // Draw pin shadow
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.beginPath();
+        this.ctx.arc(
+            pin.absoluteX + 1 / this.zoomLevel,
+            pin.absoluteY + 1 / this.zoomLevel,
+            4 / this.zoomLevel,
+            0,
+            2 * Math.PI
+        );
+        this.ctx.fill();
+        this.ctx.restore();
+        
+        // Draw pin with gradient
+        const pinGradient = this.ctx.createRadialGradient(
+            pin.absoluteX - 1 / this.zoomLevel,
+            pin.absoluteY - 1 / this.zoomLevel,
+            0,
+            pin.absoluteX,
+            pin.absoluteY,
+            4 / this.zoomLevel
+        );
+        pinGradient.addColorStop(0, '#FFB74D');
+        pinGradient.addColorStop(1, '#FF9800');
+        
+        this.ctx.fillStyle = pinGradient;
         this.ctx.beginPath();
         this.ctx.arc(pin.absoluteX, pin.absoluteY, 4 / this.zoomLevel, 0, 2 * Math.PI);
         this.ctx.fill();
         
+        // Draw pin border
         this.ctx.strokeStyle = '#F57C00';
-        this.ctx.lineWidth = 1 / this.zoomLevel;
+        this.ctx.lineWidth = 1.5 / this.zoomLevel;
         this.ctx.stroke();
+        
+        // Draw pin highlight
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        this.ctx.beginPath();
+        this.ctx.arc(
+            pin.absoluteX - 1 / this.zoomLevel,
+            pin.absoluteY - 1 / this.zoomLevel,
+            1 / this.zoomLevel,
+            0,
+            2 * Math.PI
+        );
+        this.ctx.fill();
+        
+        // Draw pin name if zoomed in enough
+        if (this.zoomLevel > 0.8 && pin.name) {
+            this.ctx.fillStyle = '#333';
+            this.ctx.font = `${Math.max(8, 10 / this.zoomLevel)}px Arial`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'top';
+            
+            // Position text based on pin position relative to component
+            const textX = pin.absoluteX;
+            const textY = pin.absoluteY + 6 / this.zoomLevel;
+            
+            // Add text background for better readability
+            const textMetrics = this.ctx.measureText(pin.name);
+            const padding = 2 / this.zoomLevel;
+            
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            this.ctx.fillRect(
+                textX - textMetrics.width / 2 - padding,
+                textY - padding,
+                textMetrics.width + padding * 2,
+                parseInt(this.ctx.font) + padding * 2
+            );
+            
+            this.ctx.fillStyle = '#333';
+            this.ctx.fillText(pin.name, textX, textY);
+        }
     }
 
     // Draw wires (placeholder for now)

@@ -3,9 +3,21 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Signalpath.Models;
+using System.Text.Json.Serialization;
 
 namespace Signalpath.Services
 {
+    public class DomRect
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double Top { get; set; }
+        public double Left { get; set; }
+        public double Right { get; set; }
+        public double Bottom { get; set; }
+    }
     public class CanvasInterop : IAsyncDisposable
     {
         private readonly IJSRuntime _jsRuntime;
@@ -117,6 +129,17 @@ namespace Signalpath.Services
             }
 
             await _jsRuntime.InvokeVoidAsync("setCanvasPan", panX, panY);
+        }
+
+        public async Task<DomRect> GetCanvasBoundingClientRectAsync()
+        {
+            if (!_isInitialized)
+            {
+                Console.WriteLine("Canvas not initialized");
+                return new DomRect();
+            }
+
+            return await _jsRuntime.InvokeAsync<DomRect>("eval", $"document.getElementById('{_canvasId}').getBoundingClientRect()");
         }
 
         // These methods will be called from JavaScript

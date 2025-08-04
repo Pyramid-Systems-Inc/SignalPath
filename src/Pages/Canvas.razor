@@ -69,22 +69,30 @@
         isDragOver = false;
     }
 
-    private void HandleDrop(DragEventArgs e)
+    private async Task HandleDropAsync(DragEventArgs e)
     {
         isDragOver = false;
 
         try
         {
-            // Get the component type from the drag data
             // Get the dragged component from SchematicState
             var componentDefinition = SchematicState.DraggedComponent;
             if (componentDefinition != null)
             {
                 // Calculate drop position relative to canvas
-                // For now, we'll place it at a default position
-                // In a more advanced implementation, we'd get the exact mouse coordinates
-                var x = 100; // Default X position
-                var y = 100; // Default Y position
+                // For now, we'll use a simple approach and improve it later
+                var x = 100.0 + (SchematicState.ComponentCount * 30.0); // Stagger components horizontally
+                var y = 100.0 + (SchematicState.ComponentCount * 30.0); // Stagger components vertically
+
+                // Snap to grid (20px grid)
+                const double gridSize = 20.0;
+                x = Math.Round(x / gridSize) * gridSize;
+                y = Math.Round(y / gridSize) * gridSize;
+
+                // Check for overlapping components and adjust position if needed
+                var adjustedPosition = FindNonOverlappingPosition(x, y, componentDefinition.Width, componentDefinition.Height);
+                x = adjustedPosition.X;
+                y = adjustedPosition.Y;
 
                 // Create a new component instance
                 var newComponent = new ComponentModel
@@ -132,5 +140,71 @@
         {
             Console.WriteLine($"Error handling drop: {ex.Message}");
         }
+    }
+
+    private void HandleDrop(DragEventArgs e)
+    {
+        _ = HandleDropAsync(e);
+    }
+
+    private (double X, double Y) FindNonOverlappingPosition(double x, double y, double width, double height)
+    {
+        const int spacing = 10; // Minimum spacing between components
+        const int maxAttempts = 10; // Maximum attempts to find a non-overlapping position
+        
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            bool overlaps = false;
+            
+            // Check if this position overlaps with any existing component
+            foreach (var existingComponent in SchematicState.Components.Values)
+            {
+                if (x < existingComponent.X + existingComponent.Width + spacing &&
+                    x + width + spacing > existingComponent.X &&
+                    y < existingComponent.Y + existingComponent.Height + spacing &&
+                    y + height + spacing > existingComponent.Y)
+                {
+                    overlaps = true;
+                    break;
+                }
+            }
+            
+            if (!overlaps)
+            {
+                return (x, y);
+            }
+            
+            // Try next position in a spiral pattern
+            if (attempt == 0)
+            {
+                // First attempt: try to the right
+                x += width + spacing;
+            }
+            else if (attempt == 1)
+            {
+                // Second attempt: try below
+                x -= width + spacing;
+                y += height + spacing;
+            }
+            else if (attempt == 2)
+            {
+                // Third attempt: try to the left
+                x -= width + spacing;
+            }
+            else if (attempt == 3)
+            {
+                // Fourth attempt: try above
+                x += width + spacing;
+                y -= height + spacing;
+            }
+            else
+            {
+                // Subsequent attempts: continue spiral pattern
+                x += width + spacing;
+            }
+        }
+        
+        // If no non-overlapping position found, return the original position
+        return (x, y);
     }
 }
