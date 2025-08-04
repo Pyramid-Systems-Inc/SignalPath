@@ -1,8 +1,45 @@
+@using Signalpath.Services
+@using Signalpath.Models
+@using System.ComponentModel
+
 <div class="canvas-panel">
-    <h3>Canvas</h3>
-    <p>The schematic will be drawn here.</p>
+    <canvas id="schematic-canvas" class="schematic-canvas"></canvas>
 </div>
 
 @code {
+    [Inject]
+    private SchematicState SchematicState { get; set; } = default!;
 
+    [Inject]
+    private CanvasInterop CanvasInterop { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize the canvas
+            await CanvasInterop.InitializeAsync();
+            
+            // Subscribe to schematic state changes
+            SchematicState.PropertyChanged += async (sender, e) =>
+            {
+                if (e.PropertyName == nameof(SchematicState.Components))
+                {
+                    await UpdateCanvas();
+                }
+                else if (e.PropertyName == nameof(SchematicState.ZoomLevel))
+                {
+                    await CanvasInterop.SetZoomLevelAsync(SchematicState.ZoomLevel);
+                }
+            };
+            
+            // Initial render
+            await UpdateCanvas();
+        }
+    }
+
+    private async Task UpdateCanvas()
+    {
+        await CanvasInterop.UpdateComponentsAsync(SchematicState.Components.Values);
+    }
 }

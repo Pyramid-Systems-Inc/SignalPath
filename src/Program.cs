@@ -12,5 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 // Register SignalPath services
 builder.Services.AddSingleton<SchematicState>();
 builder.Services.AddSingleton<ComponentLibrary>();
+builder.Services.AddSingleton<CanvasInterop>();
 
 await builder.Build().RunAsync();
