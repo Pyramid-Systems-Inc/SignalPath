@@ -12,6 +12,9 @@ class CanvasInterop {
         this.lastX = 0;
         this.lastY = 0;
         this.selectedComponentId = null;
+        this.hoveredPin = null;
+        this.mouseX = 0;
+        this.mouseY = 0;
     }
 
     // Initialize the canvas
@@ -84,6 +87,12 @@ class CanvasInterop {
             this.lastX = x;
             this.lastY = y;
         } else {
+            // Deselect component if clicking on empty canvas
+            if (this.selectedComponentId) {
+                this.selectedComponentId = null;
+                this.notifyComponentSelected(null);
+            }
+            
             // Start panning
             this.isDragging = true;
             this.lastX = e.clientX - rect.left;
@@ -95,10 +104,17 @@ class CanvasInterop {
 
     // Handle mouse move event
     handleMouseMove(e) {
-        if (!this.isDragging) return;
-
         const rect = this.canvas.getBoundingClientRect();
         
+        // Update mouse position for hover detection
+        this.mouseX = (e.clientX - rect.left - this.panX) / this.zoomLevel;
+        this.mouseY = (e.clientY - rect.top - this.panY) / this.zoomLevel;
+        
+        // Check for pin hover
+        this.checkPinHover();
+        
+        if (!this.isDragging) return;
+
         if (this.selectedComponentId) {
             // Drag component
             const x = (e.clientX - rect.left - this.panX) / this.zoomLevel;
@@ -216,6 +232,33 @@ class CanvasInterop {
             }
             
             this.notifyComponentPositionChanged(componentId, component.x, component.y);
+        }
+    }
+
+    // Check if mouse is hovering over a pin
+    checkPinHover() {
+        let foundHoveredPin = null;
+        
+        for (const component of this.components) {
+            if (component.pins) {
+                for (const pin of component.pins) {
+                    const distance = Math.sqrt(
+                        Math.pow(this.mouseX - pin.absoluteX, 2) +
+                        Math.pow(this.mouseY - pin.absoluteY, 2)
+                    );
+                    
+                    if (distance <= 8 / this.zoomLevel) {
+                        foundHoveredPin = pin;
+                        break;
+                    }
+                }
+                if (foundHoveredPin) break;
+            }
+        }
+        
+        if (foundHoveredPin !== this.hoveredPin) {
+            this.hoveredPin = foundHoveredPin;
+            this.render();
         }
     }
 
@@ -396,7 +439,7 @@ class CanvasInterop {
         
         // Draw component type label (smaller text below main label)
         if (component.type && component.type !== component.name) {
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            this.ctx.fillStyle = 'rgba(33, 33, 33, 0.8)';
             this.ctx.font = `${Math.max(6, fontSize - 3)}px Arial`;
             this.ctx.fillText(
                 component.type,

@@ -79,10 +79,18 @@
             var componentDefinition = SchematicState.DraggedComponent;
             if (componentDefinition != null)
             {
-                // Calculate drop position relative to canvas
-                // For now, we'll use a simple approach and improve it later
-                var x = 100.0 + (SchematicState.ComponentCount * 30.0); // Stagger components horizontally
-                var y = 100.0 + (SchematicState.ComponentCount * 30.0); // Stagger components vertically
+                // Calculate drop position relative to canvas using actual mouse coordinates
+                // Use a simpler approach that works with Blazor's drag event limitations
+                var x = e.ClientX - 150.0; // Approximate canvas offset (adjust as needed)
+                var y = e.ClientY - 150.0; // Approximate canvas offset (adjust as needed)
+
+                // Adjust for zoom level (approximate)
+                x /= SchematicState.ZoomLevel;
+                y /= SchematicState.ZoomLevel;
+
+                // Adjust position to center the component on the drop point
+                x -= componentDefinition.Width / 2;
+                y -= componentDefinition.Height / 2;
 
                 // Snap to grid (20px grid)
                 const double gridSize = 20.0;
