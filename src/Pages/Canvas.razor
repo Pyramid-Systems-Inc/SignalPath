@@ -5,6 +5,7 @@
 <div class="canvas-panel"
      @ondrop="HandleDrop"
      @ondragover="HandleDragOver"
+     @ondragover:preventDefault
      @ondragenter="HandleDragEnter"
      @ondragleave="HandleDragLeave">
     <canvas id="schematic-canvas" class="schematic-canvas"></canvas>
