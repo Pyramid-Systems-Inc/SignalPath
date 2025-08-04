@@ -66,7 +66,7 @@ public class BrowserConsoleLogger : ILogger
         _categoryName = categoryName;
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
     {
         return null;
     }
@@ -76,7 +76,7 @@ public class BrowserConsoleLogger : ILogger
         return logLevel >= LogLevel.Information;
     }
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         if (!IsEnabled(logLevel))
         {

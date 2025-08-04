@@ -23,7 +23,7 @@
         "minimizable": true,
         "decorations": true,
         "fullscreen": false,
-        "theme": "system"
+        "theme": "Light"
       }
     ],
     "security": {

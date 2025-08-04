@@ -6,11 +6,8 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "fs:allow-read",
-    "fs:allow-write",
-    "fs:allow-append",
-    "fs:allow-all",
-    "dialog:allow-all",
-    "path:allow-all"
+    "core:path:default",
+    "core:window:default",
+    "core:app:default"
   ]
 }
