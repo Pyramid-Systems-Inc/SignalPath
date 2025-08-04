@@ -33,6 +33,7 @@ namespace Signalpath.Services
         private double _zoomLevel = 1.0;
         private bool _isWiringMode;
         private string? _wiringStartPinId;
+        private ComponentDefinitionModel? _draggedComponent;
 
         public Dictionary<string, SchematicComponent> Components { get; } = new();
         public Dictionary<string, Net> Nets { get; } = new();
@@ -316,5 +317,22 @@ namespace Signalpath.Services
 
         public int ComponentCount => Components.Count;
         public int NetCount => Nets.Count;
+
+        // Drag and Drop functionality
+        public event Action<ComponentDefinitionModel?>? DraggedComponentChanged;
+        
+        public ComponentDefinitionModel? DraggedComponent => _draggedComponent;
+        
+        public void SetDraggedComponent(ComponentDefinitionModel? component)
+        {
+            _draggedComponent = component;
+            DraggedComponentChanged?.Invoke(component);
+        }
+        
+        public void ClearDraggedComponent()
+        {
+            _draggedComponent = null;
+            DraggedComponentChanged?.Invoke(null);
+        }
     }
 }

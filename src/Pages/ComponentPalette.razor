@@ -1,8 +1,46 @@
+@using Signalpath.Services
+@using Signalpath.Models
+
 <div class="palette-panel">
     <h3>Component Palette</h3>
-    <p>Components will be listed here.</p>
+    <div class="component-list">
+        @foreach (var component in ComponentLibrary.GetAllComponents())
+        {
+            <div class="component-item"
+                 draggable="true"
+                 @ondragstart="@(e => OnDragStart(e, component))">
+                <div class="component-icon">
+                    @if (!string.IsNullOrEmpty(component.Icon))
+                    {
+                        <span>@component.Icon</span>
+                    }
+                    else
+                    {
+                        <span>📦</span>
+                    }
+                </div>
+                <div class="component-info">
+                    <div class="component-name">@component.Name</div>
+                    <div class="component-type">@component.Id</div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
+    [Inject]
+    private ComponentLibrary ComponentLibrary { get; set; } = default!;
 
+    [Inject]
+    private SchematicState SchematicState { get; set; } = default!;
+
+    private void OnDragStart(DragEventArgs e, ComponentDefinitionModel component)
+    {
+        // Store the component in the SchematicState
+        SchematicState.SetDraggedComponent(component);
+        
+        // Set drag effect
+        e.DataTransfer.EffectAllowed = "copy";
+    }
 }

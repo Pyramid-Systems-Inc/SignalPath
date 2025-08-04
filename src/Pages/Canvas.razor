@@ -2,7 +2,11 @@
 @using Signalpath.Models
 @using System.ComponentModel
 
-<div class="canvas-panel">
+<div class="canvas-panel"
+     @ondrop="HandleDrop"
+     @ondragover="HandleDragOver"
+     @ondragenter="HandleDragEnter"
+     @ondragleave="HandleDragLeave">
     <canvas id="schematic-canvas" class="schematic-canvas"></canvas>
 </div>
 
@@ -12,6 +16,11 @@
 
     [Inject]
     private CanvasInterop CanvasInterop { get; set; } = default!;
+
+    [Inject]
+    private ComponentLibrary ComponentLibrary { get; set; } = default!;
+
+    private bool isDragOver = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -41,5 +50,86 @@
     private async Task UpdateCanvas()
     {
         await CanvasInterop.UpdateComponentsAsync(SchematicState.Components.Values);
+    }
+
+    private void HandleDragOver(DragEventArgs e)
+    {
+        // Allow drop
+        isDragOver = true;
+    }
+
+    private void HandleDragEnter(DragEventArgs e)
+    {
+        isDragOver = true;
+    }
+
+    private void HandleDragLeave(DragEventArgs e)
+    {
+        isDragOver = false;
+    }
+
+    private async Task HandleDrop(DragEventArgs e)
+    {
+        isDragOver = false;
+
+        try
+        {
+            // Get the component type from the drag data
+            // Get the dragged component from SchematicState
+            var componentDefinition = SchematicState.DraggedComponent;
+            if (componentDefinition != null)
+            {
+                // Calculate drop position relative to canvas
+                // For now, we'll place it at a default position
+                // In a more advanced implementation, we'd get the exact mouse coordinates
+                var x = 100; // Default X position
+                var y = 100; // Default Y position
+
+                // Create a new component instance
+                var newComponent = new ComponentModel
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Type = componentDefinition.Id,
+                    Name = $"{componentDefinition.Name}_{SchematicState.ComponentCount + 1}",
+                    X = x,
+                    Y = y,
+                    Width = componentDefinition.Width,
+                    Height = componentDefinition.Height,
+                    IsSelected = false
+                };
+
+                // Add pins to the component
+                foreach (var pinDefinition in componentDefinition.Pins)
+                {
+                    newComponent.Pins[pinDefinition.Id] = new PinModel
+                    {
+                        Id = $"{newComponent.Id}_{pinDefinition.Id}",
+                        Name = pinDefinition.Name,
+                        RelativeX = pinDefinition.RelativeX,
+                        RelativeY = pinDefinition.RelativeY,
+                        AbsoluteX = x + pinDefinition.RelativeX,
+                        AbsoluteY = y + pinDefinition.RelativeY,
+                        Type = pinDefinition.Type,
+                        ComponentId = newComponent.Id
+                    };
+                }
+
+                // Add default properties
+                foreach (var property in componentDefinition.DefaultProperties)
+                {
+                    newComponent.Properties[property.Key] = property.Value;
+                }
+
+                // Add the component to the schematic state
+                SchematicState.AddComponent(newComponent);
+                
+                // Clear the dragged component
+                SchematicState.ClearDraggedComponent();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling drop: {ex.Message}");
+        }
     }
 }
