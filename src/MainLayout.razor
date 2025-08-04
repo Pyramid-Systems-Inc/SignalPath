@@ -1,0 +1,78 @@
+@using Signalpath.Pages
+@inherits LayoutComponentBase
+
+<div class="app-container">
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-section">
+            <button class="toolbar-button" title="New">
+                <span class="toolbar-icon">📄</span>
+                <span class="toolbar-text">New</span>
+            </button>
+            <button class="toolbar-button" title="Open">
+                <span class="toolbar-icon">📂</span>
+                <span class="toolbar-text">Open</span>
+            </button>
+            <button class="toolbar-button" title="Save">
+                <span class="toolbar-icon">💾</span>
+                <span class="toolbar-text">Save</span>
+            </button>
+        </div>
+        <div class="toolbar-section">
+            <button class="toolbar-button" title="Undo">
+                <span class="toolbar-icon">↶</span>
+                <span class="toolbar-text">Undo</span>
+            </button>
+            <button class="toolbar-button" title="Redo">
+                <span class="toolbar-icon">↷</span>
+                <span class="toolbar-text">Redo</span>
+            </button>
+        </div>
+        <div class="toolbar-section">
+            <button class="toolbar-button" title="Zoom In">
+                <span class="toolbar-icon">🔍+</span>
+                <span class="toolbar-text">Zoom In</span>
+            </button>
+            <button class="toolbar-button" title="Zoom Out">
+                <span class="toolbar-icon">🔍-</span>
+                <span class="toolbar-text">Zoom Out</span>
+            </button>
+            <button class="toolbar-button" title="Fit to Screen">
+                <span class="toolbar-icon">⛶</span>
+                <span class="toolbar-text">Fit</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Component Palette Panel -->
+        <ComponentPalette />
+        
+        <!-- Canvas Panel -->
+        <Canvas />
+        
+        <!-- Properties Panel -->
+        <PropertiesPanel />
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-section">
+            <span class="status-text">Ready</span>
+        </div>
+        <div class="status-section">
+            <span class="status-text">Components: 0</span>
+        </div>
+        <div class="status-section">
+            <span class="status-text">Connections: 0</span>
+        </div>
+        <div class="status-section">
+            <span class="status-text">Zoom: 100%</span>
+        </div>
+    </div>
+</div>
+
+@Body {
+    @Body
+}

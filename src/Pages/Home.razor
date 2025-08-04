@@ -1,7 +1,43 @@
 ﻿@page "/"
 
-<div class="app-container">
-    <ComponentPalette />
-    <Canvas />
-    <PropertiesPanel />
+<PageTitle>SignalPath Intercom Designer</PageTitle>
+
+<div class="home-container">
+    <h1>Welcome to SignalPath</h1>
+    <p>Professional intercom system designer and schematic editor</p>
+    
+    <div class="quick-actions">
+        <button class="action-button primary">
+            <span class="action-icon">📄</span>
+            <span>New Schematic</span>
+        </button>
+        <button class="action-button secondary">
+            <span class="action-icon">📂</span>
+            <span>Open Schematic</span>
+        </button>
+        <button class="action-button secondary">
+            <span class="action-icon">❓</span>
+            <span>Getting Started</span>
+        </button>
+    </div>
+    
+    <div class="recent-projects">
+        <h2>Recent Projects</h2>
+        <div class="project-list">
+            <div class="project-item">
+                <div class="project-icon">📋</div>
+                <div class="project-info">
+                    <div class="project-name">Example Project</div>
+                    <div class="project-date">Modified today</div>
+                </div>
+            </div>
+            <div class="project-item empty">
+                <div class="project-icon">➕</div>
+                <div class="project-info">
+                    <div class="project-name">No recent projects</div>
+                    <div class="project-date">Create a new schematic to get started</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

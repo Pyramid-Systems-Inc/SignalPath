@@ -121,46 +121,333 @@ html, body, #app {
 
 .app-container {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
 }
 
+/* Toolbar Styles */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #d0d0d0;
+    padding: 8px 16px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.toolbar-section {
+    display: flex;
+    gap: 8px;
+}
+
+.toolbar-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333333;
+    transition: all 0.2s ease;
+}
+
+.toolbar-button:hover {
+    background-color: #f5f5f5;
+    border-color: #b0b0b0;
+}
+
+.toolbar-button:active {
+    background-color: #e0e0e0;
+}
+
+.toolbar-icon {
+    font-size: 16px;
+}
+
+.toolbar-text {
+    font-weight: 500;
+}
+
+/* Main Content Area */
+.main-content {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* Panel Styles */
 .palette-panel {
-    width: 200px;
+    width: 220px;
     flex-shrink: 0;
     background-color: #f0f0f0;
     border-right: 1px solid #d0d0d0;
-    padding: 10px;
+    padding: 12px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .canvas-panel {
     flex-grow: 1;
     background-color: #ffffff;
-    padding: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.properties-panel {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+    border-left: 1px solid #d0d0d0;
+    padding: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Status Bar Styles */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-top: 1px solid #d0d0d0;
+    padding: 6px 16px;
+    height: 28px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #666666;
+}
+
+.status-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.status-text {
+    font-weight: 500;
+}
+
+/* Home Page Styles */
+.home-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
 }
 
-.properties-panel {
-    width: 250px;
-    flex-shrink: 0;
+.home-container h1 {
+    font-size: 36px;
+    margin-bottom: 16px;
+    color: #333333;
+}
+
+.home-container p {
+    font-size: 18px;
+    margin-bottom: 32px;
+    color: #666666;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+}
+
+.action-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    min-width: 120px;
+}
+
+.action-button.primary {
+    background-color: #4a6fa5;
+    color: white;
+}
+
+.action-button.primary:hover {
+    background-color: #3a5f95;
+}
+
+.action-button.secondary {
     background-color: #f0f0f0;
-    border-left: 1px solid #d0d0d0;
-    padding: 10px;
-    overflow-y: auto;
+    color: #333333;
+    border-color: #d0d0d0;
+}
+
+.action-button.secondary:hover {
+    background-color: #e0e0e0;
+}
+
+.action-icon {
+    font-size: 24px;
+}
+
+.recent-projects {
+    width: 100%;
+    text-align: left;
+}
+
+.recent-projects h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: #333333;
+}
+
+.project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.project-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.project-item:hover {
+    background-color: #f0f0f0;
+}
+
+.project-item.empty {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.project-item.empty:hover {
+    background-color: #f8f8f8;
+}
+
+.project-icon {
+    font-size: 20px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+
+.project-info {
+    flex-grow: 1;
+}
+
+.project-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: #333333;
+}
+
+.project-date {
+    font-size: 12px;
+    color: #888888;
 }
 
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
+    .toolbar, .status-bar {
+        background-color: #2b2b2b;
+        border-color: #444444;
+        color: #cccccc;
+    }
+    
+    .toolbar-button {
+        background-color: #3a3a3a;
+        border-color: #555555;
+        color: #cccccc;
+    }
+    
+    .toolbar-button:hover {
+        background-color: #4a4a4a;
+        border-color: #666666;
+    }
+    
+    .toolbar-button:active {
+        background-color: #2a2a2a;
+    }
+    
     .palette-panel, .properties-panel {
         background-color: #2b2b2b;
         border-color: #444444;
     }
-
+    
     .canvas-panel {
         background-color: #1e1e1e;
+    }
+    
+    .home-container h1 {
+        color: #ffffff;
+    }
+    
+    .home-container p {
+        color: #cccccc;
+    }
+    
+    .action-button.secondary {
+        background-color: #3a3a3a;
+        color: #cccccc;
+        border-color: #555555;
+    }
+    
+    .action-button.secondary:hover {
+        background-color: #4a4a4a;
+    }
+    
+    .recent-projects h2 {
+        color: #ffffff;
+    }
+    
+    .project-item {
+        background-color: #2a2a2a;
+    }
+    
+    .project-item:hover {
+        background-color: #3a3a3a;
+    }
+    
+    .project-item.empty:hover {
+        background-color: #2a2a2a;
+    }
+    
+    .project-icon {
+        background-color: #3a3a3a;
+    }
+    
+    .project-name {
+        color: #ffffff;
+    }
+    
+    .project-date {
+        color: #aaaaaa;
     }
 }
