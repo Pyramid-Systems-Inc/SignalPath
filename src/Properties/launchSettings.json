@@ -8,7 +8,22 @@
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "applicationUrl": "http://localhost:1420",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "LOGGING__LOGLEVEL__DEFAULT": "Information",
+        "LOGGING__LOGLEVEL__MICROSOFT": "Warning",
+        "LOGGING__LOGLEVEL__MICROSOFT.HOSTING.LIFETIME": "Information"
+      }
+    },
+    "production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:1420",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "LOGGING__LOGLEVEL__DEFAULT": "Warning",
+        "LOGGING__LOGLEVEL__MICROSOFT": "Error",
+        "LOGGING__LOGLEVEL__MICROSOFT.HOSTING.LIFETIME": "Warning"
       }
     }
   }
