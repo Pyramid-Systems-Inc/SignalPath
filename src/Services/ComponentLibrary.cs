@@ -1,31 +1,11 @@
 using System.Collections.Generic;
+using Signalpath.Models;
 
 namespace Signalpath.Services
 {
-    public class ComponentDefinition
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Icon { get; set; } = string.Empty;
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public List<PinDefinition> Pins { get; set; } = new();
-        public Dictionary<string, object> DefaultProperties { get; set; } = new();
-    }
-
-    public class PinDefinition
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public double RelativeX { get; set; }
-        public double RelativeY { get; set; }
-        public string Type { get; set; } = "Generic"; // Input, Output, Power, etc.
-    }
-
     public class ComponentLibrary
     {
-        public Dictionary<string, ComponentDefinition> Components { get; } = new();
+        public Dictionary<string, ComponentDefinitionModel> Components { get; } = new();
 
         public ComponentLibrary()
         {
@@ -36,7 +16,7 @@ namespace Signalpath.Services
         private void InitializeComponents()
         {
             // Resistor component
-            Components["resistor"] = new ComponentDefinition
+            Components["resistor"] = new ComponentDefinitionModel
             {
                 Id = "resistor",
                 Name = "Resistor",
@@ -44,10 +24,10 @@ namespace Signalpath.Services
                 Icon = "🔧",
                 Width = 60,
                 Height = 20,
-                Pins = new List<PinDefinition>
+                Pins = new List<PinDefinitionModel>
                 {
-                    new PinDefinition { Id = "1", Name = "Pin 1", RelativeX = 0, RelativeY = 10, Type = "Generic" },
-                    new PinDefinition { Id = "2", Name = "Pin 2", RelativeX = 60, RelativeY = 10, Type = "Generic" }
+                    new PinDefinitionModel { Id = "1", Name = "Pin 1", RelativeX = 0, RelativeY = 10, Type = "Generic" },
+                    new PinDefinitionModel { Id = "2", Name = "Pin 2", RelativeX = 60, RelativeY = 10, Type = "Generic" }
                 },
                 DefaultProperties = new Dictionary<string, object>
                 {
@@ -58,7 +38,7 @@ namespace Signalpath.Services
             };
 
             // Op-Amp component
-            Components["opamp"] = new ComponentDefinition
+            Components["opamp"] = new ComponentDefinitionModel
             {
                 Id = "opamp",
                 Name = "Operational Amplifier",
@@ -66,13 +46,13 @@ namespace Signalpath.Services
                 Icon = "🔈",
                 Width = 80,
                 Height = 60,
-                Pins = new List<PinDefinition>
+                Pins = new List<PinDefinitionModel>
                 {
-                    new PinDefinition { Id = "1", Name = "Inverting Input", RelativeX = 0, RelativeY = 20, Type = "Input" },
-                    new PinDefinition { Id = "2", Name = "Non-inverting Input", RelativeX = 0, RelativeY = 40, Type = "Input" },
-                    new PinDefinition { Id = "3", Name = "Positive Supply", RelativeX = 40, RelativeY = 0, Type = "Power" },
-                    new PinDefinition { Id = "4", Name = "Output", RelativeX = 80, RelativeY = 30, Type = "Output" },
-                    new PinDefinition { Id = "5", Name = "Negative Supply", RelativeX = 40, RelativeY = 60, Type = "Power" }
+                    new PinDefinitionModel { Id = "1", Name = "Inverting Input", RelativeX = 0, RelativeY = 20, Type = "Input" },
+                    new PinDefinitionModel { Id = "2", Name = "Non-inverting Input", RelativeX = 0, RelativeY = 40, Type = "Input" },
+                    new PinDefinitionModel { Id = "3", Name = "Positive Supply", RelativeX = 40, RelativeY = 0, Type = "Power" },
+                    new PinDefinitionModel { Id = "4", Name = "Output", RelativeX = 80, RelativeY = 30, Type = "Output" },
+                    new PinDefinitionModel { Id = "5", Name = "Negative Supply", RelativeX = 40, RelativeY = 60, Type = "Power" }
                 },
                 DefaultProperties = new Dictionary<string, object>
                 {
@@ -84,7 +64,7 @@ namespace Signalpath.Services
             };
 
             // Microphone component
-            Components["microphone"] = new ComponentDefinition
+            Components["microphone"] = new ComponentDefinitionModel
             {
                 Id = "microphone",
                 Name = "Microphone",
@@ -92,11 +72,11 @@ namespace Signalpath.Services
                 Icon = "🎤",
                 Width = 40,
                 Height = 40,
-                Pins = new List<PinDefinition>
+                Pins = new List<PinDefinitionModel>
                 {
-                    new PinDefinition { Id = "1", Name = "Positive", RelativeX = 20, RelativeY = 0, Type = "Power" },
-                    new PinDefinition { Id = "2", Name = "Output", RelativeX = 40, RelativeY = 20, Type = "Output" },
-                    new PinDefinition { Id = "3", Name = "Ground", RelativeX = 20, RelativeY = 40, Type = "Power" }
+                    new PinDefinitionModel { Id = "1", Name = "Positive", RelativeX = 20, RelativeY = 0, Type = "Power" },
+                    new PinDefinitionModel { Id = "2", Name = "Output", RelativeX = 40, RelativeY = 20, Type = "Output" },
+                    new PinDefinitionModel { Id = "3", Name = "Ground", RelativeX = 20, RelativeY = 40, Type = "Power" }
                 },
                 DefaultProperties = new Dictionary<string, object>
                 {
@@ -108,12 +88,12 @@ namespace Signalpath.Services
             };
         }
 
-        public ComponentDefinition? GetComponent(string id)
+        public ComponentDefinitionModel? GetComponent(string id)
         {
             return Components.TryGetValue(id, out var component) ? component : null;
         }
 
-        public IEnumerable<ComponentDefinition> GetAllComponents()
+        public IEnumerable<ComponentDefinitionModel> GetAllComponents()
         {
             return Components.Values;
         }

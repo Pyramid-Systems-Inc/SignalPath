@@ -2,22 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Signalpath.Models;
+using SchematicComponent = Signalpath.Models.ComponentModel;
+using SchematicPin = Signalpath.Models.PinModel;
 
 namespace Signalpath.Services
 {
-    public class Pin
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public double RelativeX { get; set; }
-        public double RelativeY { get; set; }
-        public double AbsoluteX { get; set; }
-        public double AbsoluteY { get; set; }
-        public string Type { get; set; } = "Generic";
-        public string? NetId { get; set; }
-        public string ComponentId { get; set; } = string.Empty;
-    }
-
+    // WireSegment remains in SchematicState as it's specific to wiring functionality
     public class WireSegment
     {
         public double StartX { get; set; }
@@ -26,26 +17,13 @@ namespace Signalpath.Services
         public double EndY { get; set; }
     }
 
+    // Net remains in SchematicState as it's specific to wiring functionality
     public class Net
     {
         public string Id { get; set; } = string.Empty;
         public List<string> PinIds { get; set; } = new();
         public List<WireSegment> Segments { get; set; } = new();
         public string Name { get; set; } = string.Empty;
-    }
-
-    public class Component
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public Dictionary<string, Pin> Pins { get; set; } = new();
-        public Dictionary<string, object> Properties { get; set; } = new();
-        public bool IsSelected { get; set; } = false;
     }
 
     public class SchematicState : INotifyPropertyChanged
@@ -56,7 +34,7 @@ namespace Signalpath.Services
         private bool _isWiringMode;
         private string? _wiringStartPinId;
 
-        public Dictionary<string, Component> Components { get; } = new();
+        public Dictionary<string, SchematicComponent> Components { get; } = new();
         public Dictionary<string, Net> Nets { get; } = new();
         public List<string> ComponentIds { get; } = new();
 
@@ -88,13 +66,13 @@ namespace Signalpath.Services
             }
         }
 
-        public Component? SelectedComponent
+        public SchematicComponent? SelectedComponent
         {
             get
             {
-                return !string.IsNullOrEmpty(SelectedComponentId) && 
-                       Components.TryGetValue(SelectedComponentId, out var component) 
-                       ? component 
+                return !string.IsNullOrEmpty(SelectedComponentId) &&
+                       Components.TryGetValue(SelectedComponentId, out var component)
+                       ? component
                        : null;
             }
         }
@@ -163,7 +141,7 @@ namespace Signalpath.Services
             }
         }
 
-        public Pin? WiringStartPin
+        public SchematicPin? WiringStartPin
         {
             get
             {
@@ -186,7 +164,7 @@ namespace Signalpath.Services
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void AddComponent(Component component)
+        public void AddComponent(SchematicComponent component)
         {
             if (string.IsNullOrEmpty(component.Id))
                 throw new ArgumentException("Component ID cannot be null or empty");
@@ -255,7 +233,7 @@ namespace Signalpath.Services
             OnPropertyChanged(nameof(Components));
         }
 
-        private void UpdatePinPositions(Component component)
+        private void UpdatePinPositions(SchematicComponent component)
         {
             foreach (var pin in component.Pins.Values)
             {
