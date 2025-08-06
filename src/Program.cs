@@ -17,6 +17,7 @@ builder.Services.AddScoped(sp => new HttpClient {
 builder.Services.AddSingleton<SchematicState>();
 builder.Services.AddSingleton<ComponentLibrary>();
 builder.Services.AddSingleton<CanvasInterop>();
+builder.Services.AddScoped<IDragDropService, DragDropService>();
 
 // Add error handling services
 builder.Services.AddLogging(logging =>

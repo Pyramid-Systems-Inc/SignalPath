@@ -548,3 +548,120 @@ html, body, #app {
         color: #aaaaaa;
     }
 }
+
+/* Enhanced Drag and Drop Styles */
+.component-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    cursor: move;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+}
+
+.component-item:hover {
+    background-color: #f5f5f5;
+    border-color: #b0b0b0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.component-item:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-container {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.canvas-panel {
+    flex-grow: 1;
+    background-color: #ffffff;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.canvas-panel.drag-over {
+    background-color: #e3f2fd;
+    border: 2px dashed #2196f3;
+}
+
+.schematic-canvas {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background-color: #fafafa;
+    cursor: crosshair;
+}
+
+.drag-preview {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+}
+
+.drag-preview-content {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Tauri-specific adjustments */
+@media (prefers-color-scheme: dark) {
+    .component-item {
+        background-color: #2d2d2d;
+        border-color: #404040;
+        color: #ffffff;
+    }
+    
+    .component-item:hover {
+        background-color: #3d3d3d;
+        border-color: #505050;
+    }
+    
+    .canvas-panel {
+        background-color: #1e1e1e;
+    }
+    
+    .schematic-canvas {
+        background-color: #252525;
+        border-color: #404040;
+    }
+}
+
+/* Ensure smooth dragging performance */
+* {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+.component-item {
+    -webkit-user-drag: element;
+    -khtml-user-drag: element;
+    -moz-user-drag: element;
+    -o-user-drag: element;
+    user-drag: element;
+}

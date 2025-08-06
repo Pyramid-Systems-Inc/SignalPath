@@ -589,3 +589,47 @@ window.setCanvasZoom = function (zoomLevel) {
 window.setCanvasPan = function (panX, panY) {
     window.canvasInterop.setPan(panX, panY);
 };
+
+// Drag and drop support functions
+window.setDragData = function(event, componentId, componentName) {
+    try {
+        if (event.dataTransfer) {
+            event.dataTransfer.setData('text/plain', componentId);
+            event.dataTransfer.setData('application/json', JSON.stringify({
+                id: componentId,
+                name: componentName
+            }));
+            event.dataTransfer.effectAllowed = 'copy';
+            
+            // Create a custom drag image if needed
+            const dragImage = document.createElement('div');
+            dragImage.textContent = componentName;
+            dragImage.style.padding = '8px';
+            dragImage.style.backgroundColor = '#4CAF50';
+            dragImage.style.color = 'white';
+            dragImage.style.borderRadius = '4px';
+            dragImage.style.position = 'absolute';
+            dragImage.style.top = '-1000px';
+            document.body.appendChild(dragImage);
+            
+            event.dataTransfer.setDragImage(dragImage, 50, 20);
+            
+            // Clean up the drag image after a short delay
+            setTimeout(() => {
+                document.body.removeChild(dragImage);
+            }, 100);
+            
+            return true;
+        }
+    } catch (error) {
+        console.error('Error setting drag data:', error);
+        return false;
+    }
+    return false;
+};
+
+window.isDragDropSupported = function() {
+    return 'draggable' in document.createElement('div') &&
+           'ondragstart' in document.createElement('div') &&
+           'ondrop' in document.createElement('div');
+};

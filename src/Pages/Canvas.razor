@@ -1,34 +1,61 @@
 @using Signalpath.Services
 @using Signalpath.Models
-@using System.ComponentModel
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
-<div class="canvas-panel"
-     @ondrop="HandleDrop"
-     @ondragover="HandleDragOver"
-     @ondragover:preventDefault
-     @ondragenter="HandleDragEnter"
-     @ondragleave="HandleDragLeave">
-    <canvas id="schematic-canvas" class="schematic-canvas"></canvas>
+<div class="canvas-container">
+    <div class="canvas-panel"
+         @ondrop="HandleDrop"
+         @ondragover="HandleDragOver"
+         @ondragover:preventDefault="true"
+         @ondragenter="HandleDragEnter"
+         @ondragleave="HandleDragLeave"
+         @onmousemove="HandleMouseMove"
+         @onmouseup="HandleMouseUp"
+         @ref="canvasPanel">
+        
+        <canvas id="@canvasId" 
+                class="schematic-canvas"
+                @ref="canvasElement"></canvas>
+        
+        <!-- Custom drag preview for mouse-based dragging -->
+        @if (DragDropService.IsDragging)
+        {
+            <div class="drag-preview" 
+                 style="left: @(dragPreviewPosition.X)px; top: @(dragPreviewPosition.Y)px;">
+                <div class="drag-preview-content">
+                    @DragDropService.DraggedComponent?.Name
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
     [Inject]
-    private SchematicState SchematicState { get; set; } = default!;
-
-    [Inject]
     private CanvasInterop CanvasInterop { get; set; } = default!;
-
+    
+    [Inject]
+    private SchematicState SchematicState { get; set; } = default!;
+    
+    [Inject]
+    private IDragDropService DragDropService { get; set; } = default!;
+    
     [Inject]
     private ComponentLibrary ComponentLibrary { get; set; } = default!;
-
+    
+    private ElementReference canvasElement;
+    private ElementReference canvasPanel;
+    private string canvasId = "schematic-canvas";
     private bool isDragOver = false;
+    private (double X, double Y) dragPreviewPosition = (0, 0);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // Initialize the canvas
-            await CanvasInterop.InitializeAsync();
+            await CanvasInterop.InitializeAsync(canvasId);
+            DragDropService.DragPositionChanged += OnDragPositionChanged;
             
             // Subscribe to schematic state changes
             SchematicState.PropertyChanged += async (sender, e) =>
@@ -48,43 +75,51 @@
         }
     }
 
-    private async Task UpdateCanvas()
+    private void OnDragPositionChanged((double X, double Y) position)
     {
-        await CanvasInterop.UpdateComponentsAsync(SchematicState.Components.Values);
+        dragPreviewPosition = position;
+        InvokeAsync(StateHasChanged);
     }
 
-    private void HandleDragOver(DragEventArgs e)
-    {
-        // Allow drop
-        isDragOver = true;
-    }
-
-    private void HandleDragEnter(DragEventArgs e)
-    {
-        isDragOver = true;
-    }
-
-    private void HandleDragLeave(DragEventArgs e)
+    private async Task HandleDrop(DragEventArgs e)
     {
         isDragOver = false;
+        await ProcessDrop(e.ClientX, e.ClientY);
     }
 
-    private async Task HandleDropAsync(DragEventArgs e)
+    private async Task HandleMouseUp(MouseEventArgs e)
     {
-        isDragOver = false;
+        if (DragDropService.IsDragging)
+        {
+            await ProcessDrop(e.ClientX, e.ClientY);
+            await DragDropService.EndDragAsync();
+        }
+    }
 
+    private async Task HandleMouseMove(MouseEventArgs e)
+    {
+        if (DragDropService.IsDragging)
+        {
+            await DragDropService.UpdateDragPositionAsync(e.ClientX, e.ClientY);
+        }
+    }
+
+    private async Task ProcessDrop(double clientX, double clientY)
+    {
         try
         {
-            // Get the dragged component from SchematicState
-            var componentDefinition = SchematicState.DraggedComponent;
+            // Get the dragged component from SchematicState or DragDropService
+            var componentDefinition = SchematicState.DraggedComponent ?? DragDropService.DraggedComponent;
             if (componentDefinition != null)
             {
-                // Calculate drop position relative to canvas using actual mouse coordinates
-                // Use a simpler approach that works with Blazor's drag event limitations
-                var x = e.ClientX - 150.0; // Approximate canvas offset (adjust as needed)
-                var y = e.ClientY - 150.0; // Approximate canvas offset (adjust as needed)
+                // Get the actual canvas position using JavaScript interop
+                var canvasRect = await CanvasInterop.GetCanvasBoundingClientRectAsync();
+                
+                // Calculate drop position relative to canvas
+                var x = clientX - canvasRect.Left;
+                var y = clientY - canvasRect.Top;
 
-                // Adjust for zoom level (approximate)
+                // Adjust for zoom level
                 x /= SchematicState.ZoomLevel;
                 y /= SchematicState.ZoomLevel;
 
@@ -140,19 +175,46 @@
                 // Add the component to the schematic state
                 SchematicState.AddComponent(newComponent);
                 
-                // Clear the dragged component
-                SchematicState.ClearDraggedComponent();
+                Console.WriteLine($"Component dropped at ({x:F2}, {y:F2})");
+                
+                // Refresh the canvas
+                await UpdateCanvas();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error handling drop: {ex.Message}");
         }
+        finally
+        {
+            // Clean up
+            SchematicState.ClearDraggedComponent();
+            if (DragDropService.IsDragging)
+            {
+                await DragDropService.EndDragAsync();
+            }
+        }
     }
 
-    private void HandleDrop(DragEventArgs e)
+    private async Task UpdateCanvas()
     {
-        _ = HandleDropAsync(e);
+        await CanvasInterop.UpdateComponentsAsync(SchematicState.Components.Values);
+    }
+
+    private void HandleDragOver(DragEventArgs e)
+    {
+        e.DataTransfer.DropEffect = "copy";
+        isDragOver = true;
+    }
+
+    private void HandleDragEnter(DragEventArgs e)
+    {
+        isDragOver = true;
+    }
+
+    private void HandleDragLeave(DragEventArgs e)
+    {
+        isDragOver = false;
     }
 
     private (double X, double Y) FindNonOverlappingPosition(double x, double y, double width, double height)
@@ -214,5 +276,13 @@
         
         // If no non-overlapping position found, return the original position
         return (x, y);
+    }
+
+    public void Dispose()
+    {
+        if (DragDropService != null)
+        {
+            DragDropService.DragPositionChanged -= OnDragPositionChanged;
+        }
     }
 }

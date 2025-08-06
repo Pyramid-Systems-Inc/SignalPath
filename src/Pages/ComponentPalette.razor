@@ -1,5 +1,7 @@
 @using Signalpath.Services
 @using Signalpath.Models
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
 <div class="palette-panel">
     <h3>Component Palette</h3>
@@ -8,7 +10,12 @@
         {
             <div class="component-item"
                  draggable="true"
-                 @ondragstart="@(e => OnDragStart(e, component))">
+                 data-component-id="@component.Id"
+                 @ondragstart="@(e => OnDragStart(e, component))"
+                 @onmousedown="@(e => OnMouseDown(e, component))"
+                 @onmousemove="@(e => OnMouseMove(e, component))"
+                 @onmouseup="@(e => OnMouseUp(e, component))">
+                
                 <div class="component-icon">
                     @if (!string.IsNullOrEmpty(component.Icon))
                     {
@@ -31,16 +38,81 @@
 @code {
     [Inject]
     private ComponentLibrary ComponentLibrary { get; set; } = default!;
-
+    
     [Inject]
     private SchematicState SchematicState { get; set; } = default!;
+    
+    [Inject]
+    private IDragDropService DragDropService { get; set; } = default!;
+    
+    private bool isMouseDown = false;
+    private bool isDragging = false;
+    private ComponentDefinitionModel? currentDragComponent;
 
-    private void OnDragStart(DragEventArgs e, ComponentDefinitionModel component)
+    private async Task OnDragStart(DragEventArgs e, ComponentDefinitionModel component)
     {
-        // Store the component in the SchematicState
-        SchematicState.SetDraggedComponent(component);
-        
-        // Set drag effect
-        e.DataTransfer.EffectAllowed = "copy";
+        try
+        {
+            // Store the component in the SchematicState
+            SchematicState.SetDraggedComponent(component);
+            
+            // Set drag effect
+            e.DataTransfer.EffectAllowed = "copy";
+            
+            // Critical: Set drag data - this is often missing and causes issues in Tauri
+            await JSRuntime.InvokeVoidAsync("setDragData", e, component.Id, component.Name);
+            
+            Console.WriteLine($"HTML5 Drag started for component: {component.Name}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnDragStart: {ex.Message}");
+            // Fallback to mouse-based dragging if HTML5 drag fails
+            await StartMouseDrag(component);
+        }
+    }
+
+    private async Task OnMouseDown(MouseEventArgs e, ComponentDefinitionModel component)
+    {
+        if (e.Button == 0) // Left mouse button
+        {
+            isMouseDown = true;
+            currentDragComponent = component;
+        }
+    }
+
+    private async Task OnMouseMove(MouseEventArgs e, ComponentDefinitionModel component)
+    {
+        if (isMouseDown && !isDragging && currentDragComponent == component)
+        {
+            // Start custom drag operation if we've moved enough
+            var threshold = 5; // pixels
+            if (Math.Abs(e.MovementX) > threshold || Math.Abs(e.MovementY) > threshold)
+            {
+                await StartMouseDrag(component);
+            }
+        }
+    }
+
+    private async Task OnMouseUp(MouseEventArgs e, ComponentDefinitionModel component)
+    {
+        if (isDragging)
+        {
+            await DragDropService.EndDragAsync();
+            isDragging = false;
+        }
+        isMouseDown = false;
+        currentDragComponent = null;
+    }
+
+    private async Task StartMouseDrag(ComponentDefinitionModel component)
+    {
+        if (!isDragging)
+        {
+            isDragging = true;
+            SchematicState.SetDraggedComponent(component);
+            await DragDropService.StartDragAsync(component);
+            Console.WriteLine($"Mouse drag started for component: {component.Name}");
+        }
     }
 }

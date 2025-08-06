@@ -133,13 +133,26 @@ namespace Signalpath.Services
 
         public async Task<DomRect> GetCanvasBoundingClientRectAsync()
         {
-            if (!_isInitialized)
+            try
             {
-                Console.WriteLine("Canvas not initialized");
-                return new DomRect();
-            }
+                if (!_isInitialized)
+                {
+                    Console.WriteLine("Canvas not initialized, attempting to get rect anyway");
+                }
 
-            return await _jsRuntime.InvokeAsync<DomRect>("eval", $"document.getElementById('{_canvasId}').getBoundingClientRect()");
+                var rect = await _jsRuntime.InvokeAsync<DomRect>("eval", $"document.getElementById('{_canvasId}').getBoundingClientRect()");
+                if (rect == null)
+                {
+                    Console.WriteLine("Canvas element not found");
+                    return new DomRect { Left = 0, Top = 0, Width = 0, Height = 0 };
+                }
+                return rect;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting canvas bounding rect: {ex.Message}");
+                return new DomRect { Left = 0, Top = 0, Width = 0, Height = 0 };
+            }
         }
 
         // These methods will be called from JavaScript
